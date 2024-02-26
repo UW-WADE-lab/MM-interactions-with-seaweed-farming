@@ -1,0 +1,143 @@
+---
+title: 'Toward sustainable seaweed farming. Marine mammal interactions with algae farms in the Carribbean Sea'
+author: "Amy M. Van Cise^1^, Luis R. Rodriguez^2^, Clifford Goudey^3^, Mollie Ball^1^, Gretchen Grebe^3^, Loretta Roberson^3^"
+
+output: html_document
+# output: 
+#   bookdown::word_document2:
+#     fig_caption: yes
+#     reference_docx: Tru.formatting.8.3.2020.docx
+bibliography: "`r rbbt::bbt_write_bib('bibliography.json', overwrite = TRUE)`"
+# csl: royal-society-open-science.csl
+---
+
+1. School of Aquatic and Fishery Sciences, University of Washington, Seattle, WA
+2. 
+3. Marine Biological Laboratory, University of Chicago, Woods Hole, MA
+
+<br>
+
+^\*^Corresponding author email: avancise\@gmail.com
+
+<br>
+
+Running page head: Dolphin interactions with algae farms
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = c('pdf','png'))
+
+knitr::opts_chunk$set(
+ fig.width = 10,
+ fig.height = 8,
+ out.width = "80%"
+)
+
+library(tidyverse)
+library(ggsci)
+library(pander)
+library(captioner)
+library(english)
+library(phyloseq)
+library(magrittr)
+library(rbbt)
+library(patchwork)
+library(png)
+
+#wd <- "G:/My Drive/05 MBL algae farm"
+
+#setwd(wd)
+```
+
+## ABSTRACT {-#ABSTRACT}
+
+<br> 
+
+Key Words: marine mammal interactions, entanglement, macroalgae, biofuels, aquaculture
+
+###### Page
+
+<br>
+
+## INTRODUCTION {-#INTRODUCTION}
+Global aquaculture production has increased rapidly in the 21st century, with global production reaching 122.6 million tons in 2020 (@fao22). Algae comprised 35.1 million tons of 2020 global aquaculture production, worth 16.5 billion - up from 12 million tons in 2000 and 21 million in 2010, representing a 735% increase in global algae aquaculture since 1990 (@fao22). North America currently accounts for less than 1% of global algae production (@fao22). 
+
+Aquaculture is a major component of the United Nations 2030 Agenda for Sustainable Development, and is targeted by several global initiatives aimed at increasing sustainable aquaculture (e.g. U.N. Decade of Ocean Science for Sustainable Development, U.N. Blue Transformation Roadmap; @fao22). These initiatives are expected to catalyze future aquaculture growth and expansion into new territory, e.g. offshore aquaculture. As aquaculture production continues to expand, maintaining the sustainability of these resources is a primary concern for world leaders - including mitigating and minimizing harmful impacts such as entanglement or habitat exclusion. Nearshore macroalgae farms are considered to be an environmentally sustainable business model, with little-to-no advserse effect on the local environment and potential benefits to the local economy, and the potential for positive environmental effects such as the creation of new habitat for fishes and marine invertebrates (REFS).
+
+Carrageenan-rich macroalgaes are increasingly harvested for use in food production, synthetics, and biofuels (@campbell_hotchkiss17). The global market for carrageenan-rich marcoalgaes was valued at over \$850 million in 2022, and expected to increase to \$1.32 billion by 2030 (@researchandmarkets23) - motivating the development of warm-water macroalgae farms within the United States Exclusive Economic Zone (EEZ). The global cultivation of *Euchema* spp. and *Gracilaria* spp., two carageenan-rich tropical magroalgaes, has steadily grown since 2000 and currently represents nearly 40% of global macroalgae aquaculture @fao22. The potential economic effect of large-scale macroalgae farms may be significant, especially to small island economies such as those in the Gulf of Mexico,which rely heavily on marine resources and are increasingly threatened by pollution, climate change, fishing pressure, and loss of tourism revenue (@clegg_etal22). In addition to providing economic benefit to local communities in the Gulf of Mexico, the development of large coastal farms may reduce coastal erosion, prevent eutrophication by removing excess nutrients, and provide new habitat for local wildlife (@tanaka_etal20; @theuerkauf_etal22; @walls_etal16).
+
+Within the United States, macroalgae farming has occurred since XXXX and takes place in XXXX. **LITERATURE SEARCH FOR THIS.**
+
+Despite large-scale macroalgal farming on a global scale, rigorous testing of marine mammal interactions with macroalgal farm structures is rare or nonexistent. A recent review of peer-review literature, technical memoranda, and white papers documenting marine mammal interactions with aquaculture reported interactions with finfish and mollusc aquaculture, but did not document any marine mammal interactions with macroalgal aquaculture (@bath_etal23). This review concluded that aquaculture risk to marine mammals fall primarily into three categories: habitat exclusion, entanglement, and behavioral alteration (@callier_etal18; @carretta_etal20; @clement_sagar13; @hayes_etal20; @lloyd03; @lopez12; @price_etal17). Direct interactions with finfish aquaculture are often caused by attraction to the farm (@price_etal17). Farm avoidance has been reported in multiple studies of mollusc aquaculture (@fleming_bateman18; @gaynor_etal19; @heinrich_etal19; @Kemper2010; @markowitz_etal04; @ribeiro_etal07; @vaughn_etal07)., indicating that farm structures impacts are likely to include habitat exclusion and behavioral alteration. The extent and effect of habitat exclusion will depend on the size, concentration, and location of farms (@committeeontheassessmentofthecumulativeeffectsofanthropogenicstressorsonmarinemammals_etal17; @clement_sagar13), which may impact a species or population if the excluded habitat comprises regions important to breeding, foraging, raising young, or resting (@bath_etal23). Although macroalgal farming is unlikley to attract carnivorous marine mammals, herbivores (i.e., manatees) may be attracted to nearshore farms, and some marine mammals may be attracted to fishes aggregated by farming structures (@duprey09; @pearson09). Marine mammals that directly interact with farm structures risk entanglement or entrapment, e.g. in anchor lines, horizontal longlines, and surface buoy markers (@price_etal17). Globally, entanglement in aquaculture gear is uncommon and unlikely to significantly impact marine mammals (@bath_etal23); however, the impact of entanglements on specific populations may be significant if those populations are endangered, or if the concentration of farms increases in important feeding, breeding, or resting habitat (@bath_etal23).
+
+Several species of marine mammal (N = XX) inhabit the Gulf of Mexico, including two species of endangered baleen whale: Rice's whale (SP) and North Atlantic right whale (SP). Of these species, XX are coastally distributed around Puerto Rico. Only two species are found in the nearshore waters off La Parguera, where the macroalgae farm is being develped: bottlenose dolphins (*Tursiops trucatus*) and manatee (SP). **LITERATURE SEARCH FOR THIS.** Bottlenose dolphins are carnivorous and therefore unlikely to be attracted to a macroalgae farm. They are also highly agile in the water and capable of remote sensing via echolocation, which may minimze their risk of entanglement during chance encounters with a macroalgae farm. Entanglement risks may arise due to their inherently curious nature or if they are attracted by fish aggregating near the farm. Manatees, in comparison, are slow-moving and less agile, which may increase their entanglement risk in the farm structure. Manatees are herbivorous (**WHAT TYPE OF ALGAE TO MANATEES EAT?**) and may be attracted to a farm with significant algal biomass. **WOULD MANATEES TRAVEL THAT FAR OFFSHORE?**
+
+**Include some information here about bottlenose dolphin distribution, use of habitat near La Parguera, preferred diet, etc**
+
+The extent of marine mammal interactions and entanglement risk with tropical macroalgae farms has not previously been quantified. In the present study, we used acoustic monitoring to describe rate and duration of marine mammal interactions with a macroalgae farm, as well as visually assess the rate of entanglement with this farm, throughout three years of the development of a coastal macroalgae farm near Media Luna reef off the coast of La Parguera, Puerto Rico. This study provides an initial dataset and assessment of the entanglement risk of marine mammals in coastal tropical macroalgae farms. 
+   
+## METHODS {-#METHODS}
+
+### Data collection
+In order to track and quantify marine mammal interactions with the seaweed farm throughout multiple stages of its development, we collected acoustic recordings at two farm development sites off the southwestern coast of Puerto Rico, nearest to Paguera city: Romero and Media Luna reefs (FIGURE HERE). Bottlenose dolphins are the only marine mammal likely to interact with farms at these locations. We deployed two farm types over the course of the experiment, which we refer to throughout this manuscript as the 5-line and the catenary farms (FIGURE HERE). We deployed the 5-line farm at both sites, and the catenary only at Media Luna. In later stages of farm development, we raised and lowered the farm in response to water temperature, in order to avoid increases in temperature that may inhibit growth or kill seaweed.
+
+We recorded acoustic signals using a SoundTrap ST300 STD acoustic recorder (Ocean Instruments, Inc.) mounted to the XX corner of the farm (Figure). The recording package has an effective frequency range of 20 Hz - 60 kHz, noise floor less than 35 dB re 1 μPa above 2 kHz, and a sample rate up to 288 kS/s. We set recording effort to a duty-cycle of 1:5 minutes, allowing for a deployment duration of up to approximately 50 days between recorder servicing. We collected acoustic recordings on a near-continuous basis while the farm was deployed, with breaks in data collection when the recorder was brought back to the laboratory to download data and recharge the battery. Once data data were downloaded to an external hard drive, they were shipped to the University of Washington for acoustic processing.
+
+### Data processing
+We first divided acoustic data into monthly bins, then conducted an initial automated detection step using PAMGUARD @Gillespie2009a; @Inc.2020, an open-source software package developed for detection and classification of acoustic signals from marine mammals. Using the click detection module in PAMGUARD, we built an algorithm to detect and categorize clicks into three categories: 4-15 kHz clicks with a frequency sweep, 15-32 kHz signals with a frequency sweep, and 32-45 kHz signals with a frequency sweep. These signal categories were developed based on the reported frequency range of bottlenose dolphins (REFS), the target species of interest and species most likely to interact with the farm. 
+
+Following automated detection, we conducted a visual validation of the detection data to filter out false positive detections. We first removed 4-15 kHz detections and unclassified detections, which do not have the acoustic characteristics of delphinid echolocation clicks.  Next, examining only detections in the 15-32 kHz range or 32-45 kHz range, we distinguished and annotated delphinid clicks from ambient noise by scanning detections to identify multiple signals in rapid succession with similar waveforms, spectra, and wigner plots, most often increasing and then decreasing in amplitude as individuals approached and then left the recorder (FIGURE HERE). All annotated clicks occurring within the same 1-minute recording were grouped together and given a click event ID.
+
+We filtered annotated click events to include only those events with > 20 clicks over 160 dB. Using the XXX equation for sound absorption in water (REF HERE):
+
+EQUATION 1 HERE
+
+with a SST of X and source level of 212 dB (REF HERE), we estimated that a received level of 160 dB indicates individuals approached to within 10 m of the recorder. This allowed us to identify likely interactions with the farm, and also limited the number of false positive interactions, as most ambient noise and false detections were concentrated below ~ 155 dB.
+
+We grouped filtered click events that occurred sequentially into farm interactions, and estimated the duration of interactions by calculating the time difference between the beginning of the first click even and the end of the last click event in the interaction.
+
+Finally, we ran a PAMGUARD species classifier to confirm that all of the recorded interactions were with bottlenose dolphins. MORE HERE.
+
+### Data analysis
+
+Using a generalized linear model against the filtered dataset of annotated click events, we modeled the effect of farm location, farm type, farm depth, seasonality, and year on the number and duration of interactions with the farm during each recording period. We included the total number of minutes analyzed during each recording period as a fixed effect in the model of number of interactions with the farm. We performed model selection using a stepwise model builder in the MuMIn package in R (REFS HERE). For both models, we chose the model parameters that minimized AICc. 
+
+## RESULTS {-#RESULTS}
+
+Acoustic data were collected from 2021 through 2024. Table 1 summarizes the duration of each deployment, as well as the date range processed, total number of minutes processed each month, and the total number of minutes with positive acoustic detections (echolocation clicks and whistles shown separately).
+
+Automated detection resulted in a high rate of false positives, concentrated between 135 and 160 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks were removed from the final dataset.
+
+## DISCUSSION {-#DISCUSSION}
+  Successful deployment of various farm structures off Puerto Rico over a three year period with no marine mammal entanglements. Nearshore bottlenose dolphins interacted with the farm roughly XX% of the time.
+  
+  Most of these interactions were less than five minutes long, and likely represent the animals passing through the area. 
+  
+  Changes to farm structure did not affect the rate of interaction with the farm, or the duration of interactions with the farm.
+  These results indicate that bottlenose dolphins are able to safely interact with these farms in a state of low biomass. Higher algae biomass could attract more fish biomass, in turn attracting more marine mammals to the farm site. Higher algae biomass would also visually obscure the farm structure, although it may still be possible for odontocetes to detect the farm structure via echolocation. Further research and monitoring is needed to determine whether increased biomass would increase marine mammal interactions or increase the risk of entanglement in the farm structure. Future development of macroalgae farms might consider using sound-reflective lines to increase the detectability of the farm structure (REF).
+  Despite the successful deployment of nearshore farms with no observed adverse effects on local marine mammal populations, future development should take care not to extrapolate these results beyond the ecosystem in which the data were collected. All species of marine mammals will react differently to the development of farm structures; therefore the development of any macroalgal farm structure should be accompanied by careful site planning and monitoring. 
+  
+### Potential Future Issues
+  2/15/24 one bottlenose dolphin near the farm when research divers arrived onsite at 8:40am local time, remained with group until about 9:30am. Anectdotal evidence that animals are starting to spend more time at the farm?
+  Barracuda has been observed at the farm during Jan and Feb 2024 site visits, coinciding with early increases in algae biomass. Barracuda and bottlenose dolphins likely target similar types and sizes of fish, this may indicate that the farm is starting to aggregate smaller fish species which may attract larger predators such as the barracuda and marine mammals. Increased attraction could be a potential future concern if increased farm interaction correlates with increased entanglement rates.
+     More algal biomass means heavier lines, which means more floats are needed to keep them at the proper depth. Greater entanglement risk.
+    Moving farms offshore may increase entanglement risk for offshore cetaceans, most notably endangered baleen whales such as NARW and Rice's whale.
+    Of note, there is interest in moving macroalgal farms offshore to increase the scale of production (REF), which would increase the number of marine mammal species that may potentially interact with the farm structure. Notably, several critically endangered baleen whales occupy offshore waters in the Carribbean and U.S. North Atlantic Ocean EEZ, including Rice's whale and the North Atlantic right whale (REF). Entanglement is a threat to both of these species (REF). A successful macroalgae farm would be placed in a site that minimizes the likelihood of interactions from either of these species, and would be accompanied by regular monitoring to ensure early detection of any entanglements that do occur. Ideally, a real-time, automated acoustic detection system such as has been implemented for North Atlantic right whales in Cape Cod Bay (REF) would be implemented alongside any farms deployed in offshore sites where there is higher risk of entanglement.
+    
+## REFERENCES {-#REFERENCES}
+<div id="refs"></div>
+
+<br>
+
+<br>
+## FIGURES {-#FIGURES}
+
+1. Map of farm locations, annual/seasonal monitoring effort at each location
+2. 3D rendering of spar and cat farms, shown in water (label distance above bottom and approximate water depth)
+3. Violin plots: #visits/month, duration visits/month, Rom spar vs ML spar vs ML cat
+4. Daily behavior: #/duration of visits dawn/dusk vs not - have Mollie make this figure. Add this variable to models?
+5. click/noise ratio above and below 160dB
+6. Annual changes?
+```{r cars}
+
+```
+
