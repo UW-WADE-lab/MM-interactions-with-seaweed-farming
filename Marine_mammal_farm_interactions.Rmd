@@ -2,12 +2,15 @@
 title: 'Toward sustainable seaweed farming. Marine mammal interactions with algae farms in the Carribbean Sea'
 author: "Amy M. Van Cise^1^, Luis R. Rodriguez^2^, Clifford Goudey^3^, Mollie Ball^1^, Gretchen Grebe^3^, Loretta Roberson^3^"
 
-output: html_document
+output: 
+    html_document:
+      fig_caption: yes
 # output: 
 #   bookdown::word_document2:
 #     fig_caption: yes
 #     reference_docx: Tru.formatting.8.3.2020.docx
 bibliography: "`r rbbt::bbt_write_bib('bibliography.json', overwrite = TRUE)`"
+# bibliography: 'library.json'
 # csl: royal-society-open-science.csl
 ---
 
@@ -26,11 +29,11 @@ Running page head: Dolphin interactions with algae farms
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = c('pdf','png'))
 
-knitr::opts_chunk$set(
- fig.width = 10,
- fig.height = 8,
- out.width = "80%"
-)
+# knitr::opts_chunk$set(
+#  fig.width = 10,
+#  fig.height = 8,
+#  out.width = "80%"
+# )
 
 library(tidyverse)
 library(ggsci)
@@ -42,10 +45,10 @@ library(magrittr)
 library(rbbt)
 library(patchwork)
 library(png)
+library(lubridate)
 
-#wd <- "G:/My Drive/05 MBL algae farm"
 
-#setwd(wd)
+load("click_event_interactions.R")
 ```
 
 ## ABSTRACT {-#ABSTRACT}
@@ -103,7 +106,25 @@ Using a generalized linear model against the filtered dataset of annotated click
 
 ## RESULTS {-#RESULTS}
 
-Acoustic data were collected from 2021 through 2024. Table 1 summarizes the duration of each deployment, as well as the date range processed, total number of minutes processed each month, and the total number of minutes with positive acoustic detections (echolocation clicks and whistles shown separately).
+Acoustic data were collected and processed from 2021 through 2024. Table 1 summarizes the duration of each deployment, as well as the date range processed, total number of minutes processed each month, and the total number of minutes with positive acoustic detections (echolocation clicks and whistles shown separately). Figure 1 shows the total number of minutes processed each month and year.
+
+<br>
+
+```{r click.effort, out.height = '30%', fig.align = 'center', fig.cap = "Figure 1. Total number of minutes processed for click detections each month and year. All minutes were processed in three steps: 1) automated detection using PAMGUARD followed by 2) manual validation of click trains and 3) final QAQC to filter out detections with fewer than 20 clicks > 160 DB, indicating that the individual did not come within 10m of the recording platform."}
+
+Nmin_record %>% 
+  separate(recordName, sep = "_", into = c(NA,"Year",'month'), remove = FALSE) %>% 
+  separate(month, sep = "-", into = c("month", NA)) %>% 
+  mutate(date = as.Date(month, tryFormats = "%m%d")) %>% 
+  mutate(month = month(date)) %>% 
+  mutate(month = as.factor(month)) %>% 
+  ggplot(aes(x = month, y = nMinTotal, fill = Year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_uchicago()
+
+```
+
+<br>
 
 Automated detection resulted in a high rate of false positives, concentrated between 135 and 160 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks were removed from the final dataset.
 
@@ -129,6 +150,7 @@ Automated detection resulted in a high rate of false positives, concentrated bet
 <br>
 
 <br>
+
 ## FIGURES {-#FIGURES}
 
 1. Map of farm locations, annual/seasonal monitoring effort at each location
@@ -137,7 +159,5 @@ Automated detection resulted in a high rate of false positives, concentrated bet
 4. Daily behavior: #/duration of visits dawn/dusk vs not - have Mollie make this figure. Add this variable to models?
 5. click/noise ratio above and below 160dB
 6. Annual changes?
-```{r cars}
 
-```
 
