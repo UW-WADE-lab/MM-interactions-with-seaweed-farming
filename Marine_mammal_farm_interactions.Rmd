@@ -11,6 +11,10 @@ output:
 #     reference_docx: Tru.formatting.8.3.2020.docx
 bibliography: "`r rbbt::bbt_write_bib('bibliography.json', overwrite = TRUE)`"
 # csl: royal-society-open-science.csl
+
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_dir = "docs",
+  output_file = "index.html") })
 ---
 
 1. School of Aquatic and Fishery Sciences, University of Washington, Seattle, WA
