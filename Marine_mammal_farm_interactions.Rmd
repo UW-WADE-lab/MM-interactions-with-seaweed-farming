@@ -10,7 +10,6 @@ output:
 #     fig_caption: yes
 #     reference_docx: Tru.formatting.8.3.2020.docx
 bibliography: "`r rbbt::bbt_write_bib('bibliography.json', overwrite = TRUE)`"
-# bibliography: 'library.json'
 # csl: royal-society-open-science.csl
 ---
 
@@ -27,13 +26,12 @@ bibliography: "`r rbbt::bbt_write_bib('bibliography.json', overwrite = TRUE)`"
 Running page head: Dolphin interactions with algae farms
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = c('pdf','png'))
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
-# knitr::opts_chunk$set(
-#  fig.width = 10,
-#  fig.height = 8,
-#  out.width = "80%"
-# )
+knitr::opts_chunk$set(
+ fig.width = 6,
+ fig.height = 4
+)
 
 library(tidyverse)
 library(ggsci)
@@ -46,18 +44,18 @@ library(rbbt)
 library(patchwork)
 library(png)
 library(lubridate)
+library(ggOceanMaps)
+library(ggspatial)
 
 
-load("click_event_interactions.R")
+load("click_event_interactions.Rdata")
 ```
 
 ## ABSTRACT {-#ABSTRACT}
 
-<br> 
+Global 
 
 Key Words: marine mammal interactions, entanglement, macroalgae, biofuels, aquaculture
-
-###### Page
 
 <br>
 
@@ -106,27 +104,58 @@ Using a generalized linear model against the filtered dataset of annotated click
 
 ## RESULTS {-#RESULTS}
 
-Acoustic data were collected and processed from 2021 through 2024. Table 1 summarizes the duration of each deployment, as well as the date range processed, total number of minutes processed each month, and the total number of minutes with positive acoustic detections (echolocation clicks and whistles shown separately). Figure 1 shows the total number of minutes processed each month and year.
+Acoustic data were collected in tandem with farm deployment between January 2021 through XXX 2024 at two separate farm sites: data collection occured at Romero in 2021 and 2022, and at Media Luna in 2022 and 2023 (Figure 1). To allow for manual validation of click detections and standardize monitoring effort across months, up to 10 days of acoustic data were processed in each month when recordings were available. Table S1 summarizes the duration of each deployment, as well as the date range that was automatically processed and manually validated for clicks, the total number of minutes processed each month, and the total number of minutes with positive click detections. Figure 2 shows the total number of minutes processed each month and year.
 
 <br>
+```{r farm.location.design, fig.align = 'center', fig.cap = "Figure 1. Left: Location of Romero and Media Luna farm sites off the southwestern coast of Puerto Rico. Right: 5-line and catenary farm designs, showing the location of the Soundtrap recorder on each farm type."}
 
-```{r click.effort, out.height = '30%', fig.align = 'center', fig.cap = "Figure 1. Total number of minutes processed for click detections each month and year. All minutes were processed in three steps: 1) automated detection using PAMGUARD followed by 2) manual validation of click trains and 3) final QAQC to filter out detections with fewer than 20 clicks > 160 DB, indicating that the individual did not come within 10m of the recording platform."}
+farm_locs <- data.frame(farm = c("Media Luna", "Romero"), lat = c(17.93888, 17.95135), long = c(-67.045555,-66.98997))
 
+basemap(limits = c(-67.5,-66.5,17.7,18.3), 
+                    rotate = FALSE, bathy.style = "rbb", grid.col = NA) +
+  ggspatial::geom_spatial_point(data = farm_locs, aes(x = long, y = lat),
+                                size = 2) +
+  theme(axis.text.x=element_blank(), 
+        axis.ticks.x=element_blank(), 
+        axis.text.y=element_blank(),  
+        axis.ticks.y=element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank()) +
+  ggspatial::annotation_scale(location = "br") + 
+  ggspatial::annotation_north_arrow(location = "tr", which_north = "true")
+
+```
+
+```{r click.effort, fig.align = 'center', fig.cap = "Figure 2. Total number of minutes processed for click detections each month and year. All minutes were processed in three steps: 1) automated detection using PAMGUARD followed by 2) manual validation of click trains and 3) final QAQC to filter out detections with fewer than 20 clicks > 160 DB, indicating that the individual did not come within 10m of the recording platform."}
+
+farm.labs <- c("Media Luna", "Romero")
+names(farm.labs) <- c("ML", "Rom")
 Nmin_record %>% 
   separate(recordName, sep = "_", into = c(NA,"Year",'month'), remove = FALSE) %>% 
   separate(month, sep = "-", into = c("month", NA)) %>% 
   mutate(date = as.Date(month, tryFormats = "%m%d")) %>% 
   mutate(month = month(date)) %>% 
   mutate(month = as.factor(month)) %>% 
-  ggplot(aes(x = month, y = nMinTotal, fill = Year)) +
+  mutate(Year = as.numeric(Year)) %>% 
+  left_join(metadata, by = c("recordName","Year")) %>% 
+  ggplot(aes(x = month, y = nMinTotal, fill = as.factor(Year))) +
+  facet_wrap(~Farm_location, labeller = labeller(Farm_location = farm.labs)) +
   geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_uchicago()
+  scale_fill_uchicago() +
+  labs(fill = "Year") +
+  ylab("Total Minutes Analyzed") +
+  xlab("Month")
 
 ```
 
 <br>
 
-Automated detection resulted in a high rate of false positives, concentrated between 135 and 160 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks were removed from the final dataset.
+Automated click detection resulted in a high rate of false positives, concentrated between 135 and 160 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks (XX%) were removed from the final dataset during the manual validation step. Figure 3 illustrates the manual validation of click trains embedded in false positive detections.
+
+```{r manual.validation}
+
+```
 
 ## DISCUSSION {-#DISCUSSION}
   Successful deployment of various farm structures off Puerto Rico over a three year period with no marine mammal entanglements. Nearshore bottlenose dolphins interacted with the farm roughly XX% of the time.
