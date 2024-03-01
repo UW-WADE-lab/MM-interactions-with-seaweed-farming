@@ -1,6 +1,6 @@
 ---
-title: 'Toward sustainable seaweed farming. Marine mammal interactions with algae farms in the Carribbean Sea'
-author: "Amy M. Van Cise^1^, Luis R. Rodriguez^2^, Clifford Goudey^3^, Mollie Ball^1^, Gretchen Grebe^3^, Loretta Roberson^3^"
+title: 'Toward sustainable macroalgal aquaculture: Marine mammal interactions with algae farms in the Carribbean Sea'
+author: "Amy M. Van Cise^1*^, Luis R. Rodriguez^2^, Clifford Goudey^3^, Mollie Ball^1^, Gretchen Grebe^3^, Loretta Roberson^3^"
 
 output: 
     html_document:
@@ -18,7 +18,7 @@ knit: (function(inputFile, encoding) {
 ---
 
 1. School of Aquatic and Fishery Sciences, University of Washington, Seattle, WA
-2. 
+2. Department of Marine Sciences, University of Puerto Rico Mayaguez, La Parguera, PR
 3. Marine Biological Laboratory, University of Chicago, Woods Hole, MA
 
 <br>
@@ -27,7 +27,7 @@ knit: (function(inputFile, encoding) {
 
 <br>
 
-Running page head: Dolphin interactions with algae farms
+Running page head: *Dolphin interactions with algae farms*
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
@@ -57,7 +57,9 @@ load("click_event_interactions.Rdata")
 
 ## ABSTRACT {-#ABSTRACT}
 
-Global 
+Global development of macroalgae farms is rapidly increasing due to growing demand for macroalgae in food, biofuel, cosmetic, and scientific markets, among others. The development of tropical macroalgal farms within the U.S. EEZ is a promising sector of economic growth, especially for small island economies such as Puerto Rico. However, the development of these farms increases risk to marine mammals and other protected species, and may lead to negative outcomes such as habitat exclusion, behavioral alteration, or entanglement. Acoustic monitoring conducted during the development of a small-scale macroalgae farm off the coast of La Parguera, Puerto Rico, indicates no long-term effect of the farm structure on the behavior of bottlenose dolphins that inhabit the region. Data were recorded on a near-continuous basis using a SoundTrap ST 300, duty-cycled to record 1 out of every 5 minutes. Delphinids were detected at the farm in approximately XX% of the recorded time period, and were visually observed during XX of XXX total farm vists during a three-year farm development period (2021-2024). We used generalized additive models to predict the number and duration of dolphin interactions during each recording period, and found that there was no effect of season, year, or the type of aquaculture equipment on the number or duration of dolphin interactions with the farm. Farm location had a significant effect on the number of delphinid interactions with the farm, but not the duration of delphinid interactions, indicating the possiblity that delphinids frequent the area aroung the Romero reef more frequently than the Media Luna reef.
+
+<br>
 
 Key Words: marine mammal interactions, entanglement, macroalgae, biofuels, aquaculture
 
@@ -130,6 +132,8 @@ basemap(limits = c(-67.5,-66.5,17.7,18.3),
   ggspatial::annotation_north_arrow(location = "tr", which_north = "true")
 
 ```
+
+<br>
 
 ```{r click.effort, fig.align = 'center', fig.cap = "Figure 2. Total number of minutes processed for click detections each month and year. All minutes were processed in three steps: 1) automated detection using PAMGUARD followed by 2) manual validation of click trains and 3) final QAQC to filter out detections with fewer than 20 clicks > 160 DB, indicating that the individual did not come within 10m of the recording platform."}
 
