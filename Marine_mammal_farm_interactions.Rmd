@@ -50,6 +50,7 @@ library(png)
 library(lubridate)
 library(ggOceanMaps)
 library(ggspatial)
+library(cowplot)
 
 
 load("click_event_interactions.Rdata")
@@ -161,7 +162,94 @@ Nmin_record %>%
 
 Automated click detection resulted in a high rate of false positives, concentrated between 135 and 160 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks (XX%) were removed from the final dataset during the manual validation step. Figure 3 illustrates the manual validation of click trains embedded in false positive detections.
 
+<br>
+
 ```{r manual.validation}
+
+```
+
+<br>
+
+A total of `r format(sum(NclickPos_near_farm$nMinTotal), big.mark = ",", scientific = FALSE)` minutes were processed through the click detection pipeline. After manual validation of automated detection and filtering to remove click trains with fewer than 20 clicks louder than 160 dB (indicating that animals were likely not within 10m of the farm), our dataset included `r sum(NclickPos_near_farm$nMinPos)`, click-positive minutes, representing approximately `r round((sum(NclickPos_near_farm$nMinPos)/sum(NclickPos_near_farm$nMinTotal)) * 100,digits = 2)`% of the total dataset. Click-positive minutes were grouped together if they occurred sequentially, resulting in `r nrow(EventDBdur_near)` total documented interactions with the farm during the study period. The number of interactions per quarter and year at each farm location normalized is normalized by monitoring effort (total number of minutes analyzed per quarter and year at each farm) and shown in Figure X.
+
+<br>
+
+```{r prop.interactions, fig.align = 'center', fig.cap = "Figure 3. Proportional delphinid interactions with the farm in each quarter and year of the study period at each farm locations, shown as the total number of interactions normalized by the acoustic monitoring effort."}
+
+EventDbnum_near %>% 
+  group_by(Year, Quarter, Farm_location) %>% 
+  summarize(nEventQuarterly = (sum(nEvent)/sum(nMinTotal)), 
+            meanPosClic = mean(propClickPos)) %>% 
+  ggplot(aes(x = Quarter, y = nEventQuarterly, 
+             group = interaction(Year, Farm_location), 
+             fill = as.factor(Year))) +
+  facet_wrap("Farm_location") +
+  geom_bar(stat = "identity", position = "dodge") +
+  #geom_point() +
+  labs(fill = "Year") +
+  ylab("Num. interactions:minutes analysed") +
+  scale_fill_aaas()
+
+```
+
+<br>
+
+Mean duration of farm interactions did not change significantly over the study period or at either farm location (Figure X). The duration of interactions ranged from `r format(round(min(EventDBdur_near$eventDur), digits=2), scientific = FALSE)` - `r round(max(EventDBdur_near$eventDur), digits = 2)` minutes, with a mean duration of `r round(mean(EventDBdur_near$eventDur), digits = 2)` minutes (median = `r round(median(EventDBdur_near$eventDur), digits = 2)` minutes). Most interactions were less than 5 minutes in duration (n = `r EventDBdur_near %>% filter(eventDur < 5) %>% nrow()` of the total `r sum(EventDbnum_near$nEvent)` interactions). All outlier interactions greater than 10 minutes occured at the Romero site during the second quarter of 2021. 
+
+<br>
+
+```{r dur.interations, fig.align = 'center', fig.cap = "Figure 4. Top: Mean duration of farm interactions each quarter and year at each farm location. Bottom: Number of farm interactions binned by duration."}
+
+dur_box <- EventDBdur_near %>% 
+  group_by(Year, Quarter, Farm_location) %>% 
+  #summarize(EventDurQuarterly = mean(eventDur)) %>% 
+  ggplot(aes(x = Quarter, y = eventDur, 
+             fill = Farm_location)) +
+  geom_boxplot() +
+  facet_wrap("Year") +
+  labs(fill = "Farm location") +
+  scale_fill_aaas() +
+  ylab("Duration of interactions (min)")+
+  ylim(0,10)
+
+dur_hist <- EventDBdur_near %>% 
+  ggplot(aes(x = eventDur)) +
+  geom_histogram(fill = "purple") +
+  theme_light() +
+  ylab("Number of interactions") +
+  xlab("Duration of interactions (min)")
+
+dur_box/dur_hist
+```
+
+<br>
+
+Our GLM with highest AIC (`r round(nMin.dredge$AICc[1], digits = 2)`, next deltaAIC = `r round(nMin.dredge$delta[2], digits = 2)`) indicated that the number of farm interactions detected during each recording period was significantly affected by the total number of monitoring minutes and by farm location during the study period (Figure X). This model carried `r round(nMin.dredge$weight[1], digits = 2)` of the cumulative model weight and explaining `r round(nMin.dredge$'R^2'[1], digits = 2)*100`% of varibility in number of interactions. Models including year and quarter contributed `r round(nMin.dredge$weight[2], digits = 2)` and `r round(nMin.dredge$weight[3], digits = 2)` of the cumulative model weight, respectively, although these variables were not significant in either model. 
+
+<br>
+
+```{r interaction.model, fig.align = 'center', fig.cap = "Figure 5. Model selection table showing cumulative model weight of all models predicting the number of farm interactions during each recording period."}
+
+plot(nMin.dredge)
+
+```
+
+<br>
+
+The number of farm interactions at the Romero site was significantly greater than the number of farm interactions at the Media Luna site (Figure X).
+
+<br>
+
+```{r interaction_farm, fig.align = 'center', fig.cap = "Figure 6. Number of farm interactions by farm location."}
+
+ggplot(data = EventDbnum_near, aes(x = Farm_location, y = nEvent, fill = Farm_location))+
+  geom_violin()+
+  scale_fill_jama()+
+  theme_classic() +
+  ylab("Number of interactions")+
+  xlab("Farm location") +
+  theme(legend.position = "none")
+
 
 ```
 

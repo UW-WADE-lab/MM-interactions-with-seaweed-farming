@@ -167,18 +167,35 @@ ggplot(aes(x = Quarter, y = meanPosClic,
   geom_line() +
   labs(color = "Year", linetype = "Farm location")
 
+#barplot
 EventDbnum_near %>% 
   group_by(Year, Quarter, Farm_location) %>% 
   summarize(nEventQuarterly = (sum(nEvent)/sum(nMinTotal)), 
             meanPosClic = mean(propClickPos)) %>% 
   ggplot(aes(x = Quarter, y = nEventQuarterly, 
              group = interaction(Year, Farm_location), 
-             fill = as.factor(Year), linetype = Farm_location)) +
+             fill = as.factor(Year))) +
   facet_wrap("Farm_location") +
   geom_bar(stat = "identity", position = "dodge") +
   #geom_point() +
-  labs(color = "Year", linetype = "Farm location") +
-  ylab("Num. interactions:minutes analysed")
+  labs(fill = "Year") +
+  ylab("Num. interactions:minutes analysed") +
+  scale_fill_aaas()
+
+#boxplot
+EventDbnum_near %>% 
+  group_by(Year, Quarter, Farm_location) %>% 
+  summarize(nEventQuarterly = (sum(nEvent)/sum(nMinTotal)), 
+            meanPosClic = mean(propClickPos)) %>% 
+  ggplot(aes(x = Quarter, y = nEventQuarterly, 
+             group = interaction(Year, Farm_location), 
+             fill = as.factor(Year))) +
+  facet_wrap("Farm_location") +
+  geom_boxplot(stat = "identity", position = "dodge") +
+  #geom_point() +
+  labs(fill = "Year") +
+  ylab("Num. interactions:minutes analysed") +
+  scale_fill_aaas()
 
 #### Plot duration of interactions by quarter and year ------------------------
 
@@ -186,10 +203,19 @@ EventDBdur_near %>%
   group_by(Year, Quarter, Farm_location) %>% 
   summarize(EventDurQuarterly = mean(eventDur)) %>% 
   ggplot(aes(x = Quarter, y = EventDurQuarterly, 
-             color = Farm_location)) +
-  geom_point(stat = "identity") +
+             fill = Farm_location)) +
+  geom_bar(stat = "identity", position = "dodge") +
   facet_wrap("Year") +
-  labs(color = "Farm location")
+  labs(fill = "Farm location") +
+  scale_fill_aaas() +
+  ylab("Duration of farm interactions (min)")
+
+EventDBdur_near %>% 
+  ggplot(aes(x = eventDur)) +
+  geom_histogram(fill = "purple") +
+  theme_light() +
+  ylab("Number of interactions") +
+  xlab("Duration of farm interactions (min)")
 
 #### Model number of interactions ---------------------------------------------
 
@@ -208,7 +234,10 @@ plot(nMin.dredge)
 ggplot(data = EventDbnum_near, aes(x = Farm_location, y = nEvent, fill = Farm_location))+
   geom_violin()+
   scale_fill_jama()+
-  theme_classic()
+  theme_classic() +
+  ylab("Number of interactions")+
+  xlab("Farm location") +
+  theme(legend.position = "none")
   
 #### Model duration of interactions -------------------------------------------
 
@@ -226,12 +255,20 @@ ggplot(data = EventDBdur_near, aes(x = as.factor(Quarter), y = eventDur, fill = 
   geom_violin()+
   scale_fill_jama()+
   theme_classic()+
-  ylim(0,50)
+  ylim(0,50)+
+  ylab("Duration of interactions")+
+  xlab("Quarter")+
+  labs(fill = "Farm location")
 
 ggplot(data = EventDBdur_near, aes(x = as.factor(Year), y = eventDur, fill = Farm_location))+
   geom_violin()+
   scale_fill_jama()+
   theme_classic()+
-  ylim(0,50)
+  ylim(0,50)+
+  ylab("Duration of interactions")+
+  xlab("Year") +
+  labs(fill = "Farm location")
+
+
 
 save(Nmin_record, metadata, NclickPos_near_farm, EventDBdur_near, EventDbnum_near, nMin.dredge, dur.dredge, file = "click_event_interactions.Rdata")
