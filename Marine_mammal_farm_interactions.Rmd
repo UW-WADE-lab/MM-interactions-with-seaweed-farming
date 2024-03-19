@@ -95,19 +95,19 @@ We first divided acoustic data into monthly bins, then conducted an initial auto
 
 Following automated detection, we conducted a visual validation of the detection data to filter out false positive detections. We first removed 4-15 kHz detections and unclassified detections, which do not have the acoustic characteristics of delphinid echolocation clicks.  Next, examining only detections in the 15-32 kHz range or 32-45 kHz range, we distinguished and annotated delphinid clicks from ambient noise by scanning detections to identify multiple signals in rapid succession with similar waveforms, spectra, and wigner plots, most often increasing and then decreasing in amplitude as individuals approached and then left the recorder (FIGURE HERE). All annotated clicks occurring within the same 1-minute recording were grouped together and given a click event ID.
 
-We filtered annotated click events to include only those events with > 20 clicks over 160 dB. Using the XXX equation for sound absorption in water (REF HERE):
+We filtered annotated click events to include only those events with > 20 clicks over 160 dB. To determine this threshold, we estimated the expected amplitude of received echolocation signals from delphinids near (<10 m) the farm using the following equation for sound absorption in water (REF HERE):
 
-EQUATION 1 HERE
+$$
+  RL = SL - 20*log(r) + \alpha*r
+$$
 
-with a SST of X and source level of 212 dB (REF HERE), we estimated that a received level of 160 dB indicates individuals approached to within 10 m of the recorder. This allowed us to identify likely interactions with the farm, and also limited the number of false positive interactions, as most ambient noise and false detections were concentrated below ~ 155 dB.
+where RL is the signal's receive level, SL is the signal's source level, r is the distance in meters from the signal source, and alpha is the absorption rate. Using an absorption rate of 0.03 DB/m (REF HERE) and source level of 212 dB (REF HERE), we estimated that a received level of 160 dB indicates individuals approached to within 10 m of the recorder. This allowed us to identify likely interactions with the farm, and also limited the number of false positive interactions, as most ambient noise and false detections were concentrated below ~ 155 dB.
 
 We grouped filtered click events that occurred sequentially into farm interactions, and estimated the duration of interactions by calculating the time difference between the beginning of the first click even and the end of the last click event in the interaction.
 
-Finally, we ran a PAMGUARD species classifier to confirm that all of the recorded interactions were with bottlenose dolphins. MORE HERE.
-
 ### Data analysis
 
-Using a generalized linear model against the filtered dataset of annotated click events, we modeled the effect of farm location, farm type, farm depth, seasonality, and year on the number and duration of interactions with the farm during each recording period. We included the total number of minutes analyzed during each recording period as a fixed effect in the model of number of interactions with the farm. We performed model selection using a stepwise model builder in the MuMIn package in R (REFS HERE). For both models, we chose the model parameters that minimized AICc. 
+All data analyses and plots were generated using the R coding language in R studio @RCoreTeam2016. Using a generalized linear model against the filtered dataset of annotated click events, we modeled the effect of farm location, farm type, farm depth, seasonality, and year on the number and duration of interactions with the farm during each recording period. We included the total number of minutes analyzed during each recording period as a fixed effect in the model of number of interactions with the farm. We performed model selection using a stepwise model builder in the MuMIn package in R. For both models, we chose the model parameters that minimized AICc. 
 
 ## RESULTS {-#RESULTS}
 
@@ -164,8 +164,8 @@ Automated click detection resulted in a high rate of false positives, concentrat
 
 <br>
 
-```{r manual.validation}
-
+```{r manual.validation, out.width='50%', out.height='50%', fig.align = 'center', fig.cap = "Figure 3. Panel A: An example of 1 minute of clicks detected using the PAMGUARD automated click detector. Time is on the x axis, and amplitude in DB is on the y axis. Each dot represents a single detected signal. Purple and black detections are unlikely to be delphinid clicks. Red and organge detections are likely delphinid clicks. Teal detections were manually confirmed to be part of a delphinid click train. Panel B: The same minute of acoustic data, showing only likely detections that are considered likely to be delphinid clicks. Panel C: Acoustic parameters of 1 confirmed delphinid click, showing the wafeform, spectrum, and Wigner plot characteristics used to manually validate clicks."}
+knitr::include_graphics('manualValidationExample.png')
 ```
 
 <br>
@@ -174,7 +174,7 @@ A total of `r format(sum(NclickPos_near_farm$nMinTotal), big.mark = ",", scienti
 
 <br>
 
-```{r prop.interactions, fig.align = 'center', fig.cap = "Figure 3. Proportional delphinid interactions with the farm in each quarter and year of the study period at each farm locations, shown as the total number of interactions normalized by the acoustic monitoring effort."}
+```{r prop.interactions, fig.align = 'center', fig.cap = "Figure 4. Proportional delphinid interactions with the farm in each quarter and year of the study period at each farm locations, shown as the total number of interactions normalized by the acoustic monitoring effort."}
 
 EventDbnum_near %>% 
   group_by(Year, Quarter, Farm_location) %>% 
@@ -198,7 +198,7 @@ Mean duration of farm interactions did not change significantly over the study p
 
 <br>
 
-```{r dur.interations, fig.align = 'center', fig.cap = "Figure 4. Top: Mean duration of farm interactions each quarter and year at each farm location. Bottom: Number of farm interactions binned by duration."}
+```{r dur.interations, fig.align = 'center', fig.cap = "Figure 5. Top: Mean duration of farm interactions each quarter and year at each farm location. Bottom: Number of farm interactions binned by duration."}
 
 dur_box <- EventDBdur_near %>% 
   group_by(Year, Quarter, Farm_location) %>% 
@@ -228,7 +228,7 @@ Our GLM with highest AIC (`r round(nMin.dredge$AICc[1], digits = 2)`, next delta
 
 <br>
 
-```{r interaction.model, fig.align = 'center', fig.cap = "Figure 5. Model selection table showing cumulative model weight of all models predicting the number of farm interactions during each recording period."}
+```{r interaction.model, fig.align = 'center', fig.cap = "Figure 6. Model selection table showing cumulative model weight of all models predicting the number of farm interactions during each recording period."}
 
 plot(nMin.dredge)
 
@@ -240,7 +240,7 @@ The number of farm interactions at the Romero site was significantly greater tha
 
 <br>
 
-```{r interaction_farm, fig.align = 'center', fig.cap = "Figure 6. Number of farm interactions by farm location."}
+```{r interaction_farm, fig.align = 'center', fig.cap = "Figure 7. Number of farm interactions by farm location."}
 
 ggplot(data = EventDbnum_near, aes(x = Farm_location, y = nEvent, fill = Farm_location))+
   geom_violin()+

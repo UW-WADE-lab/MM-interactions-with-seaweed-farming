@@ -199,6 +199,7 @@ EventDbnum_near %>%
 
 #### Plot duration of interactions by quarter and year ------------------------
 
+#barplot
 EventDBdur_near %>% 
   group_by(Year, Quarter, Farm_location) %>% 
   summarize(EventDurQuarterly = mean(eventDur)) %>% 
@@ -209,6 +210,19 @@ EventDBdur_near %>%
   labs(fill = "Farm location") +
   scale_fill_aaas() +
   ylab("Duration of farm interactions (min)")
+
+#boxplot
+EventDBdur_near %>% 
+  group_by(Year, Quarter, Farm_location) %>% 
+  #summarize(EventDurQuarterly = mean(eventDur)) %>% 
+  ggplot(aes(x = Quarter, y = eventDur, 
+             fill = Farm_location)) +
+  geom_boxplot() +
+  facet_wrap("Year") +
+  labs(fill = "Farm location") +
+  scale_fill_aaas() +
+  ylab("Duration of farm interactions (min)")+
+  ylim(0,10)
 
 EventDBdur_near %>% 
   ggplot(aes(x = eventDur)) +
