@@ -98,7 +98,7 @@ Following automated detection, we conducted a visual validation of the detection
 We filtered annotated click events to include only those events with > 20 clicks over 160 dB. To determine this threshold, we estimated the expected amplitude of received echolocation signals from delphinids near (<10 m) the farm using the following equation for sound absorption in water (REF HERE):
 
 $$
-  RL = SL - 20*log(r) + \alpha*r
+RL = SL - 20*log(r) + \alpha*r
 $$
 
 where RL is the signal's receive level, SL is the signal's source level, r is the distance in meters from the signal source, and alpha is the absorption rate. Using an absorption rate of 0.03 DB/m (REF HERE) and source level of 212 dB (REF HERE), we estimated that a received level of 160 dB indicates individuals approached to within 10 m of the recorder. This allowed us to identify likely interactions with the farm, and also limited the number of false positive interactions, as most ambient noise and false detections were concentrated below ~ 155 dB.
