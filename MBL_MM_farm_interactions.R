@@ -14,9 +14,10 @@ library(ggsci)
 
 metadata <- read.csv("MBL_farm_PR_acoustic_data.csv") %>% 
   select(recordName, Farm_location, Farm_type, Farm_depth, Year, Quarter,
-         Record.Start.Date.Time, Record.End.Date.Time, AnalysisStartDateTime, AnalysisEndDateTime, Num_click_events)
+         Record.Start.Date.Time, Record.End.Date.Time, Analysis.Start.Date.Time, Analysis.End.Date.Time, Num_click_events) %>% 
+  filter(!is.na(Year))
 
-write.csv(metadata, file = "Table S1. Acoustic recording metadata.csv")
+#write.csv(metadata, file = "Table S1. Acoustic recording metadata.csv")
 
 dbList <- grep(list.files("../sqlite", full.names = TRUE), pattern = "journal", invert = TRUE, value = TRUE)
 
@@ -64,6 +65,7 @@ rm(tempClickPos, tempRecord, tempPos)
 
 #### Filter click events by amplitude ------------------------------------------
 #### 160 DB ~ 10 m from hydrophone
+
 
 clickPosDB_filt <- clickPosDB %>% 
   group_by(EventId) %>% 
@@ -245,7 +247,9 @@ nMin.dredge <- dredge(global.model = glm(formula = nEvent ~ Farm_location +
 
 plot(nMin.dredge)
 
-ggplot(data = EventDbnum_near, aes(x = Farm_location, y = nEvent, fill = Farm_location))+
+ggplot(data = EventDbnum_near, aes(x = Farm_location, 
+                                   y = nEvent, 
+                                   fill = Farm_location))+
   geom_violin()+
   scale_fill_jama()+
   theme_classic() +
@@ -278,7 +282,7 @@ ggplot(data = EventDBdur_near, aes(x = as.factor(Year), y = eventDur, fill = Far
   geom_violin()+
   scale_fill_jama()+
   theme_classic()+
-  ylim(0,50)+
+  #ylim(0,50)+
   ylab("Duration of interactions")+
   xlab("Year") +
   labs(fill = "Farm location")
