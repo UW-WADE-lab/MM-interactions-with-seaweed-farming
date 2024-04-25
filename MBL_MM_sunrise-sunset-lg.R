@@ -164,11 +164,10 @@ EventDbnum_near <- EventDbnum_near %>%
 
 clickpos_min <- PosDB_filt %>%
   mutate(date = as.Date(clickpos_min$UTC,tryFormats = c("%Y-%m-%d"))) %>%
-  mutate(datetime = strptime(clickpos_min$UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S")))%>%
-  mutate(sunrise = sunrise(date = clickpos_min$date, lon = -66.244494, lat = 18.424218, tz="UTC")) %>%
-  mutate(sunrise = strptime(clickpos_min$sunrise, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S")))%>%
-  mutate(sunset = sunset(date = clickpos_min$date, lon = -66.244494, lat = 18.424218))%>%
-  mutate(sunset = strptime(clickpos_min$sunset, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S")))
-  #mutate(riseDifftime = difftime(clickpos_min$datetime, clickpos_min$sunrisedt, tz="UTC", units= c("auto")))
-        
-      
+  mutate(datetime = strptime(clickpos_min$UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
+  mutate(sunrise = sunrise(clickpos_min$datetime, lon = -66,lat = 18.2))%>%
+  mutate(setset = sunset(clickpos_min$datetime, lon = -66, lat = 18.2))
+#mutate(riseDifftime = difftime(clickpos_min$datetime, clickpos_min$sunrisedt, tz="UTC", units= c("auto")))
+
+
+  
