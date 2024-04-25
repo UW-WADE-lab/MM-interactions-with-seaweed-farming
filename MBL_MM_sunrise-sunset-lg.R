@@ -14,14 +14,14 @@ library(bioRad)
 
 #### Read in data ----------------------------------------------------------
 
-metadata <- read.csv("C:/Users/Intern/MM-interactions-with-seaweed-farming/MBL_farm_PR_acoustic_data.csv") %>% 
+metadata <- read.csv("M:/MBL Box SoundTrap folder/02 Metadata/MBL_farm_PR_acoustic_data.csv") %>% 
   select(recordName, Farm_location, Farm_type, Farm_depth, Year, Quarter,
          Record.Start.Date.Time, Record.End.Date.Time, Analysis.Start.Date.Time, Analysis.End.Date.Time, Num_click_events) %>% 
   filter(!is.na(Year))
 
 #write.csv(metadata, file = "Table S1. Acoustic recording metadata.csv")
 
-dbList <- grep(list.files("C:/Users/Intern/MM-interactions-with-seaweed-farming/sqlite", full.names = TRUE), pattern = "journal", invert = TRUE, value = TRUE)
+dbList <- grep(list.files("M:/MBL Box SoundTrap folder/sqlite", full.names = TRUE), pattern = "journal", invert = TRUE, value = TRUE)
 
 dbNames <- data.frame(dbList) %>% 
   separate(dbList, sep = "/", into = c(NA,NA, "name")) %>% 
