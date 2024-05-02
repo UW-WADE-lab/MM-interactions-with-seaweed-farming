@@ -169,20 +169,26 @@ clickpos_min <- PosDB_filt %>%
   mutate(sunrise = sunrise(clickpos_min$datetime, lon = -67.0467,lat = 17.9455))%>%
   mutate(sunset = sunset(clickpos_min$datetime, lon = -67.0467, lat = 17.9455)) %>%
   mutate(rise.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunrise, tz="UTC", units= c("hours"))))%>%
-  mutate(set.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunset, tz="UTC", units= c("hours"))))
+  mutate(set.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunset, tz="UTC", units= c("hours"))))%>%
+  mutate(riseset.event =
+    ifelse(clickpos_min$rise.event < clickpos_min$set.event, clickpos_min$rise.event, clickpos_min$set.event))
   
-
-plot(datetime, rise.event, ylab = c("difftime event to sunrise (hrs)"), xlab = c("event"), main = c("Time Difference Between Event and Sunrise vs Event"))
-
-ggplot(clickpos_min, aes(x=date, y=rise.event)) + 
-  geom_violin() + 
-  ggtitle("Time Difference Between Event and Sunrise vs Event")+
-  labs(y= "difftime event to sunrise(hrs)", x = "event")
-
-plot(date, set.event, ylab = c("difftime event to sunset (min)"), xlab = c("event"), main = c("Time Difference Between Event and Sunset vs Event"))
-
-ggplot(clickpos_min, aes(x=date, y=set.event)) + 
-  geom_violin() + 
-  ggtitle("Time Difference Between Event and Sunset vs Event") +
-  labs(y= "difftime event to sunset(hrs)", x = "event")
+#### Plots showing the time difference between event and sunrise on y axis, date on x axis 
 ##720 minutes = 12 hours (the time between sunrise and sunset at the equinox)
+# plot(datetime, rise.event, ylab = c("difftime event to sunrise (hrs)"), xlab = c("event"), main = c("Time Difference Between Event and Sunrise vs Event"))
+# 
+# ggplot(clickpos_min, aes(x=date, y=rise.event)) + 
+#   geom_violin() + 
+#   ggtitle("Time Difference Between Event and Sunrise vs Event")+
+#   labs(y= "difftime event to sunrise(hrs)", x = "event")
+# 
+# #### Plots showing the time difference between event and sunset on y axis, date on x axis 
+# plot(date, set.event, ylab = c("difftime event to sunset (min)"), xlab = c("event"), main = c("Time Difference Between Event and Sunset vs Event"))
+# 
+# ggplot(clickpos_min, aes(x=date, y=set.event)) + 
+#   geom_violin() + 
+#   ggtitle("Time Difference Between Event and Sunset vs Event") +
+#   labs(y= "difftime event to sunset(hrs)", x = "event")
+
+#### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
+hist(clickpos_min$riseset.event, main= c("Frequency of Click Positive Minutes per Hours after Sunrise or Sunset"), xlab = c("Hours Since Sunrise/Sunset"))
