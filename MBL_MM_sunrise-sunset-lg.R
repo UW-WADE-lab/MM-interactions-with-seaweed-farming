@@ -13,6 +13,7 @@ library(ggsci)
 library(bioRad)
 library(dplyr)
 
+
 #### Read in data ----------------------------------------------------------
 
 metadata <- read.csv("M:/MBL Box SoundTrap folder/02 Metadata/MBL_farm_PR_acoustic_data.csv") %>% 
@@ -165,9 +166,9 @@ EventDbnum_near <- EventDbnum_near %>%
 
 clickpos_min <- PosDB_filt %>%
   mutate(date = as.Date(clickpos_min$UTC,tryFormats = c("%Y-%m-%d"))) %>%
-  mutate(datetime = strptime(clickpos_min$UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
+  mutate(datetime = strptime(clickpos_min$UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S")))%>%
   mutate(sunrise = sunrise(clickpos_min$datetime, lon = -67.0467,lat = 17.9455))%>%
-  mutate(sunset = sunset(clickpos_min$datetime, lon = -67.0467, lat = 17.9455)) %>%
+  mutate(sunset = sunset(clickpos_min$datetime, lon = -67.0467, lat = 17.9455))%>%
   mutate(rise.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunrise, tz="UTC", units= c("hours"))))%>%
   mutate(set.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunset, tz="UTC", units= c("hours"))))%>%
   mutate(riseset.event =
@@ -192,3 +193,19 @@ clickpos_min <- PosDB_filt %>%
 
 #### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
 hist(clickpos_min$riseset.event, main= c("Frequency of Click Positive Minutes per Hours after Sunrise or Sunset"), xlab = c("Hours Since Sunrise/Sunset"))
+
+#### Divides data into 10 minute bins from sunrise or sunset (e.g. 0-10 min from rise/set)
+#### Groups bins by recording period and counts the number of events in each bin
+riseset_bin <- clickpos_min %>%
+  mutate(riseset.min = clickpos_min$riseset.event*60)%>%
+  mutate(diel.bins = cut(x=riseset.min, breaks=seq(0,700,10))) %>%
+  mutate(recording_period = difftime(clickpos_min$EventEnd, clickpos_min$UTC, tz="UTC", units= c("hours"))) %>%
+  group_by(diel.bins, recording_period, nClicks)%>%
+  summarize()
+
+
+#### Models binned sunrise and sunset data (glm)
+
+
+
+
