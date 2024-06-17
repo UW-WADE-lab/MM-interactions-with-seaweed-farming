@@ -12,104 +12,12 @@ library(MuMIn)
 library(ggsci)
 library(bioRad)
 library(dplyr)
+library(MASS)
 
 
 #### Read in data ----------------------------------------------------------
 
-metadata <- read.csv("M:/MBL Box SoundTrap folder/02 Metadata/MBL_farm_PR_acoustic_data.csv") %>% 
-  select(recordName, Farm_location, Farm_type, Farm_depth, Year, Quarter,
-         Record.Start.Date.Time, Record.End.Date.Time, Analysis.Start.Date.Time, Analysis.End.Date.Time, Num_click_events) %>% 
-  filter(!is.na(Year))
-
-#write.csv(metadata, file = "Table S1. Acoustic recording metadata.csv")
-
-dbList <- grep(list.files("M:/MBL Box SoundTrap folder/sqlite", full.names = TRUE), pattern = "journal", invert = TRUE, value = TRUE)
-
-dbNames <- data.frame(dbList) %>% 
-  separate(dbList, sep = "/", into = c(NA,NA, "name")) %>% 
-  separate(name, sep = "\\.", into = c("name", NA)) %>% 
-  pull(name)
-
-dbNameList <- dbList
-names(dbNameList) <- dbNames
-
-clickPosDB <- data.frame()
-recordDB <- data.frame()
-PosDB <- data.frame()
-
-for (i in 1:length(dbList)) {
-  
-  conn <- DBI::dbConnect(RSQLite::SQLite(), dbList[i])
-  
-  #alltables <- dbListTables(conn)
-  
-  tempClickPos <- dbGetQuery(conn, "SELECT * from Click_Detector_OfflineClicks") %>% 
-    select(Id, UID,UTC,BinaryFile,EventId,ClickNo,Amplitude) %>% 
-    mutate(recordName = names(dbNameList)[i])
-  
-  clickPosDB <- bind_rows(clickPosDB, tempClickPos)
-  
-  tempRecord <- dbGetQuery(conn, "SELECT * from Sound_Acquisition") %>% 
-    select(Id, UID,UTC,Status,SystemName, duration) %>% 
-    mutate(recordName = names(dbNameList)[i])
-  
-  recordDB <- bind_rows(recordDB, tempRecord)
-  
-  tempPos <- dbGetQuery(conn, "SELECT * from Click_Detector_OfflineEvents") %>% 
-    select(Id, UID,UTC,EventEnd, eventType, nClicks) %>% 
-    mutate(recordName = names(dbNameList)[i])
-  
-  PosDB <- bind_rows(PosDB, tempPos)
-  
-  dbDisconnect(conn)
-  
-}
-
-rm(tempClickPos, tempRecord, tempPos)
-
-#### Filter click events by amplitude ------------------------------------------
-#### 160 DB ~ 10 m from hydrophone
-
-
-clickPosDB_filt <- clickPosDB %>% 
-  group_by(EventId) %>% 
-  mutate(EventMean = mean(Amplitude)) %>% 
-  mutate(nClicks_near = sum(Amplitude >= 160)) %>% 
-  filter(nClicks_near >= 20) %>% 
-  ungroup()
-
-# df of click positive minutes near farm
-clickPos_near_farm <- clickPosDB_filt %>% 
-  distinct(recordName, EventId)
-
-# join above df with PosDB to get click positive minutes near farm
-PosDB_filt <- clickPos_near_farm %>% 
-  left_join(PosDB, by = c("recordName" = "recordName", "EventId" = "Id"))
-
-#### Summarize number and proportion of click positive minutes near farm -------
-
-# number click positive minutes near farm per recording period
-NclickPos_near_farm <- clickPos_near_farm %>% 
-  group_by(recordName) %>% 
-  summarise(nMinPos = n())
-
-# total number of minutes analyzed per recording period
-Nmin_record <- recordDB %>% 
-  filter(!Status == "Stop                ") %>% 
-  group_by(recordName, Status) %>% 
-  summarise(num.min = n()) %>% 
-  mutate(num.min.new = case_when(Status == "Continue            " ~ floor(num.min/5),
-                                 Status == "Start               " ~ floor(num.min),
-                                 TRUE ~ 0)) %>% 
-  ungroup() %>% 
-  group_by(recordName) %>% 
-  summarise(nMinTotal = sum(num.min.new))
-
-
-# add total minutes to NclickPos_near_farm, calculate proportion per recording period
-NclickPos_near_farm <- NclickPos_near_farm %>% 
-  left_join(Nmin_record, by = "recordName") %>% 
-  mutate(propClickPos = nMinPos/nMinTotal)
+load("click_event_interactions.Rdata")
 
 #### Plot showing number of minutes analyzed -----------------------------------
 
@@ -123,56 +31,17 @@ Nmin_record %>%
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_uchicago()
 
-##### Join click pos minutes into events ---------------------------------------
-
-EventDBdur_near <- PosDB_filt %>% 
-  mutate(UTC = ymd_hms(UTC)) %>% 
-  mutate(EventEnd = ymd_hms(EventEnd)) %>%
-  arrange(UTC) %>% 
-  mutate(time.diff = UTC - lag(UTC)) %>% 
-  mutate(cont = case_when(time.diff > 6 ~ 0,
-                          time.diff < 6 ~ 1,
-                          TRUE ~ NA)) %>% 
-  mutate(GroupEventId = case_when(cont == 0 ~ EventId,
-                                  cont == 1 ~ NA,
-                                  TRUE ~ NA)) %>% 
-  fill(GroupEventId, .direction = "down") %>% 
-  mutate(GroupEventId = case_when(row_number() == 1 ~ 1,
-                                  TRUE ~ GroupEventId)) %>% 
-  group_by(recordName, GroupEventId) %>% 
-  mutate(StartTime = min(UTC)) %>% 
-  mutate(EndTime = (max(EventEnd))) %>% 
-  mutate(eventDur = difftime(EndTime, StartTime, units = "min")) %>% 
-  mutate(nClicksEvent = sum(nClicks)) %>% 
-  select(recordName, EventId, GroupEventId, StartTime, EndTime, eventDur, nClicksEvent) %>% 
-  slice_head() %>% 
-  ungroup()
-
-EventDbnum_near <- EventDBdur_near %>% 
-  group_by(recordName) %>% 
-  summarize(nEvent = n())
-
-#### Add metadata to EventDBnum_near and EventDBdur_near -----------------------
-
-EventDBdur_near <- EventDBdur_near %>% 
-  left_join(metadata, by = "recordName") %>% 
-  mutate(eventDur = as.numeric(eventDur))
-
-EventDbnum_near <- EventDbnum_near %>% 
-  left_join(metadata, by = "recordName") %>% 
-  left_join(NclickPos_near_farm, by = "recordName")
-
 #### Add sunrise and sunset times, get the time difference between event and closest sunrise/sunset time
 
 clickpos_min <- PosDB_filt %>%
-  mutate(date = as.Date(clickpos_min$UTC,tryFormats = c("%Y-%m-%d"))) %>%
-  mutate(datetime = strptime(clickpos_min$UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S")))%>%
-  mutate(sunrise = sunrise(clickpos_min$datetime, lon = -67.0467,lat = 17.9455))%>%
-  mutate(sunset = sunset(clickpos_min$datetime, lon = -67.0467, lat = 17.9455))%>%
-  mutate(rise.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunrise, tz="UTC", units= c("hours"))))%>%
-  mutate(set.event = abs(difftime(clickpos_min$datetime, clickpos_min$sunset, tz="UTC", units= c("hours"))))%>%
+  mutate(date = as.Date(UTC,tryFormats = c("%Y-%m-%d"))) %>%
+  mutate(datetime = strptime(UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
+  mutate(sunrise = sunrise(datetime, lon = -67.0467,lat = 17.9455))%>%
+  mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455))%>%
+  mutate(rise.event = abs(difftime(datetime, sunrise, tz="UTC", units= c("hours"))))%>%
+  mutate(set.event = abs(difftime(datetime, sunset, tz="UTC", units= c("hours"))))%>%
   mutate(riseset.event =
-    ifelse(clickpos_min$rise.event < clickpos_min$set.event, clickpos_min$rise.event, clickpos_min$set.event))
+    ifelse(rise.event < set.event, rise.event, set.event))
   
 #### Plots showing the time difference between event and sunrise on y axis, date on x axis 
 ##720 minutes = 12 hours (the time between sunrise and sunset at the equinox)
@@ -194,18 +63,57 @@ clickpos_min <- PosDB_filt %>%
 #### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
 hist(clickpos_min$riseset.event, main= c("Frequency of Click Positive Minutes per Hours after Sunrise or Sunset"), xlab = c("Hours Since Sunrise/Sunset"))
 
+ggplot(data = clickpos_min, aes(x = riseset.event, fill = Year)) +
+  geom_histogram(binwidth = 0.17) +
+  theme_minimal()
+
 #### Divides data into 10 minute bins from sunrise or sunset (e.g. 0-10 min from rise/set)
 #### Groups bins by recording period and counts the number of events in each bin
-riseset_bin <- clickpos_min %>%
-  mutate(riseset.min = clickpos_min$riseset.event*60)%>%
-  mutate(diel.bins = cut(x=riseset.min, breaks=seq(0,700,10))) %>%
-  mutate(recording_period = difftime(clickpos_min$EventEnd, clickpos_min$UTC, tz="UTC", units= c("hours"))) %>%
-  group_by(diel.bins, recording_period, nClicks)%>%
-  summarize()
+riseset_binned <- clickpos_min %>%
+  mutate(riseset.min = riseset.event*60) %>%
+  mutate(diel.bins = cut(x=riseset.min, breaks=seq(0,700,10), labels = FALSE))
+
+
+bin_summary <- riseset_binned %>% 
+  group_by(diel.bins, recordName) %>%
+  summarize(nMin=n()) %>% 
+  ungroup() %>% 
+  left_join(metadata, by = "recordName")
 
 
 #### Models binned sunrise and sunset data (glm)
 
+# Generalized Linear Model with poisson family distribution
+poiss.model <- glm(nMin ~ diel.bins + Quarter, family = poisson, data = bin_summary)
+# summary results
+summary(poiss.model)
 
+# Generalized linear model with Negative binomial family distribution
+nb.model <- glm.nb(nMin ~ diel.bins, data = bin_summary)
+# summar results
+summary(nb.model)
 
+# Use MuMIn package to iteratively build and choose best model
+
+nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins + 
+                                             Year + 
+                                             Quarter +
+                                             Farm_location +
+                                             Farm_type,
+                                           data = bin_summary,
+                                           family = poisson,
+                                           na.action = na.fail), 
+                          extra = "R^2")
+
+plot(nMin.crepuscular.dredge)
+
+best.poiss.model <- glm(nMin ~ diel.bins + Farm_location , family = poisson, data = bin_summary)
+# summary results
+summary(best.poiss.model)
+
+ggplot(data = bin_summary, aes(x=diel.bins, y = nMin, fill = Farm_location)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  scale_fill_manual(values=pnw_palette(n=6,name="Cascades")[c(3,6)],
+                     name = "Farm location") 
 

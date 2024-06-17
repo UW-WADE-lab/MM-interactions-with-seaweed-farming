@@ -9,11 +9,12 @@ library(RSQLite)
 library(lubridate)
 library(MuMIn)
 library(ggsci)
+library(MASS)
 
 #### Read in data ----------------------------------------------------------
 
 metadata <- read.csv("MBL_farm_PR_acoustic_data.csv") %>% 
-  select(recordName, Farm_location, Farm_type, Farm_depth, Year, Quarter,
+  dplyr::select(recordName, Farm_location, Farm_type, Farm_depth, Year, Quarter,
          Record.Start.Date.Time, Record.End.Date.Time, Analysis.Start.Date.Time, Analysis.End.Date.Time, Num_click_events) %>% 
   filter(!is.na(Year))
 
@@ -40,19 +41,19 @@ conn <- DBI::dbConnect(RSQLite::SQLite(), dbList[i])
 #alltables <- dbListTables(conn)
 
 tempClickPos <- dbGetQuery(conn, "SELECT * from Click_Detector_OfflineClicks") %>% 
-  select(Id, UID,UTC,BinaryFile,EventId,ClickNo,Amplitude) %>% 
+  dplyr::select(Id, UID,UTC,BinaryFile,EventId,ClickNo,Amplitude) %>% 
   mutate(recordName = names(dbNameList)[i])
 
 clickPosDB <- bind_rows(clickPosDB, tempClickPos)
 
 tempRecord <- dbGetQuery(conn, "SELECT * from Sound_Acquisition") %>% 
-  select(Id, UID,UTC,Status,SystemName, duration) %>% 
+  dplyr::select(Id, UID,UTC,Status,SystemName, duration) %>% 
   mutate(recordName = names(dbNameList)[i])
 
 recordDB <- bind_rows(recordDB, tempRecord)
 
 tempPos <- dbGetQuery(conn, "SELECT * from Click_Detector_OfflineEvents") %>% 
-  select(Id, UID,UTC,EventEnd, eventType, nClicks) %>% 
+  dplyr::select(Id, UID,UTC,EventEnd, eventType, nClicks) %>% 
   mutate(recordName = names(dbNameList)[i])
 
 PosDB <- bind_rows(PosDB, tempPos)
@@ -140,7 +141,7 @@ EventDBdur_near <- PosDB_filt %>%
   mutate(EndTime = (max(EventEnd))) %>% 
   mutate(eventDur = difftime(EndTime, StartTime, units = "min")) %>% 
   mutate(nClicksEvent = sum(nClicks)) %>% 
-  select(recordName, EventId, GroupEventId, StartTime, EndTime, eventDur, nClicksEvent) %>% 
+  dplyr::select(recordName, EventId, GroupEventId, StartTime, EndTime, eventDur, nClicksEvent) %>% 
   slice_head() %>% 
   ungroup()
 
@@ -235,17 +236,18 @@ EventDBdur_near %>%
 
 #### Model number of interactions ---------------------------------------------
 
-nMin.dredge <- dredge(global.model = glm(formula = nEvent ~ Farm_location + 
+nEvent.dredge <- dredge(global.model = glm(formula = nEvent ~ Farm_location + 
                                                             Farm_type + 
                                                             Year + 
                                                             Quarter +
                                                             nMinTotal,
-                          data = EventDbnum_near,
+                                                                                      data = EventDbnum_near,
+                          family = poisson,
                           na.action = na.fail), 
        fixed = "nMinTotal",
        extra = "R^2")
 
-plot(nMin.dredge)
+plot(nEvent.dredge)
 
 ggplot(data = EventDbnum_near, aes(x = Farm_location, 
                                    y = nEvent, 
@@ -256,7 +258,24 @@ ggplot(data = EventDbnum_near, aes(x = Farm_location,
   ylab("Number of interactions")+
   xlab("Farm location") +
   theme(legend.position = "none")
-  
+
+numIntBest <- glm(formula = nEvent ~ Farm_location + 
+                    Year + 
+                    Quarter, 
+                          data = EventDbnum_near,
+                          family = poisson,
+                          na.action = na.fail)
+
+summary(numIntBest)
+
+numIntNB <- glm.nb(formula = nEvent ~ Farm_location + 
+                     Year + 
+                     Quarter, 
+                   data = EventDbnum_near,
+                   na.action = na.fail)
+
+summary(numIntNB)
+
 #### Model duration of interactions -------------------------------------------
 
 dur.dredge <- dredge(global.model = glm(formula = eventDur ~ Farm_location + 
@@ -264,6 +283,7 @@ dur.dredge <- dredge(global.model = glm(formula = eventDur ~ Farm_location +
                                            Year + 
                                            Quarter,
                                          data = EventDBdur_near,
+                                        family = poisson,
                                          na.action = na.fail), 
                       extra = "R^2")
 
@@ -289,4 +309,4 @@ ggplot(data = EventDBdur_near, aes(x = as.factor(Year), y = eventDur, fill = Far
 
 
 
-save(Nmin_record, metadata, NclickPos_near_farm, EventDBdur_near, EventDbnum_near, nMin.dredge, dur.dredge, file = "click_event_interactions.Rdata")
+save(Nmin_record, metadata, PosDB_filt, NclickPos_near_farm, EventDBdur_near, EventDbnum_near, nMin.dredge, dur.dredge, file = "click_event_interactions.Rdata")
