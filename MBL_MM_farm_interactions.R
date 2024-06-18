@@ -309,4 +309,5 @@ ggplot(data = EventDBdur_near, aes(x = as.factor(Year), y = eventDur, fill = Far
 
 
 
-save(Nmin_record, metadata, PosDB_filt, NclickPos_near_farm, EventDBdur_near, EventDbnum_near, nMin.dredge, dur.dredge, file = "click_event_interactions.Rdata")
+save(Nmin_record, metadata, PosDB_filt, NclickPos_near_farm, EventDBdur_near, EventDbnum_near, nEvent.dredge, dur.dredge, file = "click_event_interactions.Rdata")
+
