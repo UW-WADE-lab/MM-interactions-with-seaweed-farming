@@ -13,7 +13,11 @@ library(ggsci)
 library(bioRad)
 library(dplyr)
 library(MASS)
-
+library(performance)
+library(PNWColors)
+library(corrplot)
+library(see)
+library(parameters)
 
 #### Read in data ----------------------------------------------------------
 
@@ -63,23 +67,40 @@ clickpos_min <- PosDB_filt %>%
 #### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
 hist(clickpos_min$riseset.event, main= c("Frequency of Click Positive Minutes per Hours after Sunrise or Sunset"), xlab = c("Hours Since Sunrise/Sunset"))
 
-ggplot(data = clickpos_min, aes(x = riseset.event, fill = Year)) +
+ggplot(data = clickpos_min, aes(x = riseset.event)) + #removed fill = Year due to error "object 'Year' not found
   geom_histogram(binwidth = 0.17) +
   theme_minimal()
 
 #### Divides data into 10 minute bins from sunrise or sunset (e.g. 0-10 min from rise/set)
-#### Groups bins by recording period and counts the number of events in each bin
+
 riseset_binned <- clickpos_min %>%
-  mutate(riseset.min = riseset.event*60) %>%
+  mutate(riseset.min = riseset.event*60) %>% #converts hours since sunrise or sunset to minutes since sunrise or sunset
   mutate(diel.bins = cut(x=riseset.min, breaks=seq(0,700,10), labels = FALSE))
 
-
+#### Groups bins by recording period and counts the number of click positive minutes(events?) in each bin
 bin_summary <- riseset_binned %>% 
   group_by(diel.bins, recordName) %>%
   summarize(nMin=n()) %>% 
   ungroup() %>% 
   left_join(metadata, by = "recordName")
 
+#### Pearson correlation test, mean, var
+
+# change categorical to binary
+bin_summary2 <- bin_summary%>%
+  dplyr::select(-recordName, -nMin, -Farm_depth)
+
+#rom = 1 ML = 0
+bin_summary2$Farm_location <- ifelse(bin_summary2$Farm_location== "Rom",1,0)
+#cat = 1 5-line = 0
+bin_summary2$Farm_type <- ifelse(bin_summary2$Farm_type== "cat",1,0)
+
+cor.test <- cor(bin_summary2[1:5])
+corrplot(cor.test, type="upper", order="hclust", addCoef.col = "black")
+
+#mean and variance of response variable
+mean(bin_summary$nMin) #1.78
+var(bin_summary$nMin) #1.88
 
 #### Models binned sunrise and sunset data (glm)
 
@@ -87,33 +108,60 @@ bin_summary <- riseset_binned %>%
 poiss.model <- glm(nMin ~ diel.bins + Quarter, family = poisson, data = bin_summary)
 # summary results
 summary(poiss.model)
+check_overdispersion(poiss.model)
+check_zeroinflation(poiss.model)
+
 
 # Generalized linear model with Negative binomial family distribution
-nb.model <- glm.nb(nMin ~ diel.bins, data = bin_summary)
-# summar results
-summary(nb.model)
+# nb.model <- glm.nb(nMin ~ diel.bins, data = bin_summary)
+# # summar results
+# summary(nb.model)
 
 # Use MuMIn package to iteratively build and choose best model
 
-nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins + 
-                                             Year + 
+# nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins + 
+#                                              Year + 
+#                                              Quarter +
+#                                              Farm_location +
+#                                              Farm_type,
+#                                            data = bin_summary,
+#                                            family = poisson,
+#                                            na.action = na.fail), 
+#                           extra = "R^2")
+# 
+# plot(nMin.crepuscular.dredge)
+
+#Determining the best model based on AIC; adding in one vairable at a time
+poiss.model.one <- glm(nMin ~ diel.bins, family = poisson, data = bin_summary)
+
+poiss.model.two <- glm(nMin ~ diel.bins + Farm_location, family = poisson, data = bin_summary)
+
+poiss.model.three <- glm(nMin ~ diel.bins + Farm_location + Quarter, family = poisson, data = bin_summary)
+summary(poiss.model.three)
+
+AIC(poiss.model.one, poiss.model.two, poiss.model.three)
+
+nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
                                              Quarter +
-                                             Farm_location +
-                                             Farm_type,
+                                             Farm_location,
                                            data = bin_summary,
                                            family = poisson,
-                                           na.action = na.fail), 
+                                           na.action = na.fail),
                           extra = "R^2")
 
 plot(nMin.crepuscular.dredge)
 
-best.poiss.model <- glm(nMin ~ diel.bins + Farm_location , family = poisson, data = bin_summary)
-# summary results
-summary(best.poiss.model)
+#plots residuals; some pattern expected because categorical data
+res <- residuals(poiss.model.two)
+plot(res)
+
+#plots model coefficients; connects data to response variable (when it doesn't cross zero, it is significant)
+plot(parameters(poiss.model.two))
 
 ggplot(data = bin_summary, aes(x=diel.bins, y = nMin, fill = Farm_location)) +
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +
-  scale_fill_manual(values=pnw_palette(n=6,name="Cascades")[c(3,6)],
+  scale_fill_manual(values=pnw_palette(n=6,name="Starfish")[c(3,6)],
                      name = "Farm location") 
+
 
