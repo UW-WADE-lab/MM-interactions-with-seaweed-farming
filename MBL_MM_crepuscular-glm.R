@@ -84,8 +84,7 @@ bin_summary <- riseset_binned %>%
   ungroup() %>% 
   left_join(metadata, by = "recordName")
 
-#### Pearson correlation test, mean, var
-
+#### Pearson correlation test
 # change categorical to binary
 bin_summary2 <- bin_summary%>%
   dplyr::select(-recordName, -nMin, -Farm_depth)
@@ -105,11 +104,11 @@ var(bin_summary$nMin) #1.88
 #### Models binned sunrise and sunset data (glm)
 
 # Generalized Linear Model with poisson family distribution
-poiss.model <- glm(nMin ~ diel.bins + Quarter, family = poisson, data = bin_summary)
+poiss.model.q <- glm(nMin ~ diel.bins + Quarter, family = poisson, data = bin_summary)
 # summary results
 summary(poiss.model)
-check_overdispersion(poiss.model)
-check_zeroinflation(poiss.model)
+check_overdispersion(poiss.model.q)
+check_zeroinflation(poiss.model.q)
 
 
 # Generalized linear model with Negative binomial family distribution
@@ -133,13 +132,19 @@ check_zeroinflation(poiss.model)
 
 #Determining the best model based on AIC; adding in one vairable at a time
 poiss.model.one <- glm(nMin ~ diel.bins, family = poisson, data = bin_summary)
+check_overdispersion(poiss.model.one)
+check_zeroinflation(poiss.model.one)
 
 poiss.model.two <- glm(nMin ~ diel.bins + Farm_location, family = poisson, data = bin_summary)
+check_overdispersion(poiss.model.two)
+check_zeroinflation(poiss.model.two)
 
 poiss.model.three <- glm(nMin ~ diel.bins + Farm_location + Quarter, family = poisson, data = bin_summary)
 summary(poiss.model.three)
+check_overdispersion(poiss.model.three)
+check_zeroinflation(poiss.model.three)
 
-AIC(poiss.model.one, poiss.model.two, poiss.model.three)
+AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 
 nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
                                              Quarter +
