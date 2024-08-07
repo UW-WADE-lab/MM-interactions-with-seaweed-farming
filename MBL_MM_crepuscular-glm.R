@@ -106,7 +106,7 @@ var(bin_summary$nMin) #1.88
 # Generalized Linear Model with poisson family distribution
 poiss.model.q <- glm(nMin ~ diel.bins + Quarter, family = poisson, data = bin_summary)
 # summary results
-summary(poiss.model)
+summary(poiss.model.q)
 check_overdispersion(poiss.model.q)
 check_zeroinflation(poiss.model.q)
 
