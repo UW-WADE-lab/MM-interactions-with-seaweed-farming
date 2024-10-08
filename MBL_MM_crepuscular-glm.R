@@ -106,7 +106,7 @@ var(bin_summary$nMin) #1.88
 # Generalized Linear Model with poisson family distribution
 poiss.model.q <- glm(nMin ~ diel.bins + Quarter, family = poisson, data = bin_summary)
 # summary results
-summary(poiss.model)
+summary(poiss.model.q)
 check_overdispersion(poiss.model.q)
 check_zeroinflation(poiss.model.q)
 
@@ -146,6 +146,7 @@ check_zeroinflation(poiss.model.three)
 
 AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 
+#Model selection using dredge
 nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
                                              Quarter +
                                              Farm_location,
@@ -160,9 +161,19 @@ plot(nMin.crepuscular.dredge)
 res <- residuals(poiss.model.two)
 plot(res)
 
+#residual boxplots (for categorical variables)
+fitted <- fitted(poiss.model.two)
+
+bin_summary$diel.bins_binned <- cut(bin_summary$diel.bins, seq(0,60, by=10))
+plot(bin_summary$diel.bins_binned, res, xlab = "Diel bins", ylab = "residuals")
+
+plot(as.factor(bin_summary$Farm_location), res, xlab = "Farm_location", ylab = "residuals")
+
 #plots model coefficients; connects data to response variable (when it doesn't cross zero, it is significant)
 plot(parameters(poiss.model.two))
 
+
+# histogram showing number of click positive minutes by diel bin
 ggplot(data = bin_summary, aes(x=diel.bins, y = nMin, fill = Farm_location)) +
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +
