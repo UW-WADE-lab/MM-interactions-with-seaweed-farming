@@ -98,8 +98,8 @@ cor.test <- cor(bin_summary2[1:5])
 corrplot(cor.test, type="upper", order="hclust", addCoef.col = "black")
 
 #mean and variance of response variable
-mean(bin_summary$nMin) #1.78
-var(bin_summary$nMin) #1.88
+mean(bin_summary$nMin) #1.74
+var(bin_summary$nMin) #1.74
 
 #### Models binned sunrise and sunset data (glm)
 
@@ -132,10 +132,12 @@ check_zeroinflation(poiss.model.q)
 
 #Determining the best model based on AIC; adding in one vairable at a time
 poiss.model.one <- glm(nMin ~ diel.bins, family = poisson, data = bin_summary)
+summary(poiss.model.one)
 check_overdispersion(poiss.model.one)
 check_zeroinflation(poiss.model.one)
 
 poiss.model.two <- glm(nMin ~ diel.bins + Farm_location, family = poisson, data = bin_summary)
+summary(poiss.model.two)
 check_overdispersion(poiss.model.two)
 check_zeroinflation(poiss.model.two)
 
@@ -146,15 +148,15 @@ check_zeroinflation(poiss.model.three)
 
 AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 
-nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
-                                             Quarter +
-                                             Farm_location,
-                                           data = bin_summary,
-                                           family = poisson,
-                                           na.action = na.fail),
-                          extra = "R^2")
-
-plot(nMin.crepuscular.dredge)
+# nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
+#                                              Quarter +
+#                                              Farm_location,
+#                                            data = bin_summary,
+#                                            family = poisson,
+#                                            na.action = na.fail),
+#                           extra = "R^2")
+# 
+# plot(nMin.crepuscular.dredge)
 
 #plots residuals; some pattern expected because categorical data
 res <- residuals(poiss.model.two)
@@ -166,7 +168,10 @@ plot(parameters(poiss.model.two))
 ggplot(data = bin_summary, aes(x=diel.bins, y = nMin, fill = Farm_location)) +
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +
-  scale_fill_manual(values=pnw_palette(n=6,name="Starfish")[c(3,6)],
-                     name = "Farm location") 
+  scale_fill_manual(values=pnw_palette(n=6,name="Winter")[c(4.5,5.5)],
+                     name = "Farm location") +
+  labs(x= "bins", y= "difftime from event to sunrise/sunset(hrs)") +
+  ggtitle("Time Difference Between Event and Sunrise vs Event")
+  
 
 

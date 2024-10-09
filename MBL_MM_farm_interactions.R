@@ -40,6 +40,8 @@ conn <- DBI::dbConnect(RSQLite::SQLite(), dbList[i])
 
 #alltables <- dbListTables(conn)
 
+result <- tryCatch({
+  
 tempClickPos <- dbGetQuery(conn, "SELECT * from Click_Detector_OfflineClicks") %>% 
   dplyr::select(Id, UID,UTC,BinaryFile,EventId,ClickNo,Amplitude) %>% 
   mutate(recordName = names(dbNameList)[i])
@@ -57,6 +59,12 @@ tempPos <- dbGetQuery(conn, "SELECT * from Click_Detector_OfflineEvents") %>%
   mutate(recordName = names(dbNameList)[i])
 
 PosDB <- bind_rows(PosDB, tempPos)
+
+
+}, error = function(e) {
+  message(sprintf("Error in iteration %d: %s", i, e$message))
+  NULL  # or other error handling
+})
 
 dbDisconnect(conn)
 
