@@ -148,6 +148,7 @@ check_zeroinflation(poiss.model.three)
 
 AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 
+<<<<<<< HEAD
 # nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
 #                                              Quarter +
 #                                              Farm_location,
@@ -157,14 +158,36 @@ AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 #                           extra = "R^2")
 # 
 # plot(nMin.crepuscular.dredge)
+=======
+#Model selection using dredge
+nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
+                                             Quarter +
+                                             Farm_location,
+                                           data = bin_summary,
+                                           family = poisson,
+                                           na.action = na.fail),
+                          extra = "R^2")
+
+plot(nMin.crepuscular.dredge)
+>>>>>>> b517688eb2d0e72c002f58323b6566f78bb8a5b8
 
 #plots residuals; some pattern expected because categorical data
 res <- residuals(poiss.model.two)
 plot(res)
 
+#residual boxplots (for categorical variables)
+fitted <- fitted(poiss.model.two)
+
+bin_summary$diel.bins_binned <- cut(bin_summary$diel.bins, seq(0,60, by=10))
+plot(bin_summary$diel.bins_binned, res, xlab = "Diel bins", ylab = "residuals")
+
+plot(as.factor(bin_summary$Farm_location), res, xlab = "Farm_location", ylab = "residuals")
+
 #plots model coefficients; connects data to response variable (when it doesn't cross zero, it is significant)
 plot(parameters(poiss.model.two))
 
+
+# histogram showing number of click positive minutes by diel bin
 ggplot(data = bin_summary, aes(x=diel.bins, y = nMin, fill = Farm_location)) +
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +

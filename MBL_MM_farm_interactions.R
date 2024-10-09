@@ -195,14 +195,16 @@ EventDbnum_near %>%
 
 #boxplot
 EventDbnum_near %>% 
+  #filter(Year != 2024) %>% 
   group_by(Year, Quarter, Farm_location) %>% 
   summarize(nEventQuarterly = (sum(nEvent)/sum(nMinTotal)), 
             meanPosClic = mean(propClickPos)) %>% 
-  ggplot(aes(x = Quarter, y = nEventQuarterly, 
+  ggplot(aes(x = as.factor(Quarter), y = nEventQuarterly, 
              group = interaction(Year, Farm_location), 
              fill = as.factor(Year))) +
   facet_wrap("Farm_location") +
-  geom_boxplot(stat = "identity", position = "dodge") +
+  geom_boxplot() +
+  #geom_boxplot(stat = "identity", position = "dodge") +
   #geom_point() +
   labs(fill = "Year") +
   ylab("Num. interactions:minutes analysed") +
