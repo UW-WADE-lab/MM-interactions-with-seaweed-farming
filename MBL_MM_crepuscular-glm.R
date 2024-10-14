@@ -18,6 +18,7 @@ library(PNWColors)
 library(corrplot)
 library(see)
 library(parameters)
+library(ggridges)
 
 #### Read in data ----------------------------------------------------------
 
@@ -26,59 +27,35 @@ load("click_event_interactions.Rdata")
 #### Plot showing number of minutes analyzed -----------------------------------
 
 Nmin_record %>% 
-  separate(recordName, sep = "_", into = c(NA,"Year",'month'), remove = FALSE) %>% 
+  separate(recordName, sep = "_", into = c(NA, "Year", "month"), remove = FALSE) %>% 
   separate(month, sep = "-", into = c("month", NA)) %>% 
   mutate(date = as.Date(month, tryFormats = "%m%d")) %>% 
   mutate(month = month(date)) %>% 
   mutate(month = as.factor(month)) %>% 
   ggplot(aes(x = month, y = nMinTotal, fill = Year)) +
   geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_uchicago()
+  scale_fill_manual(values = c("2021" = "#005A32", "2022" = "lightblue", "2023" = "steelblue", "2023-2024" = "#ADDD8E", "2024" = "green3")) +
+  theme_minimal()
 
 #### Add sunrise and sunset times, get the time difference between event and closest sunrise/sunset time
 
 clickpos_min <- PosDB_filt %>%
-  mutate(date = as.Date(UTC,tryFormats = c("%Y-%m-%d"))) %>%
+  mutate(date = as.Date(UTC, tryFormats = c("%Y-%m-%d"))) %>%
   mutate(datetime = strptime(UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
-  mutate(sunrise = sunrise(datetime, lon = -67.0467,lat = 17.9455))%>%
-  mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455))%>%
-  mutate(rise.event = abs(difftime(datetime, sunrise, tz="UTC", units= c("hours"))))%>%
-  mutate(set.event = abs(difftime(datetime, sunset, tz="UTC", units= c("hours"))))%>%
-  mutate(riseset.event =
-    ifelse(rise.event < set.event, rise.event, set.event))
-  
-#### Plots showing the time difference between event and sunrise on y axis, date on x axis 
-##720 minutes = 12 hours (the time between sunrise and sunset at the equinox)
-# plot(datetime, rise.event, ylab = c("difftime event to sunrise (hrs)"), xlab = c("event"), main = c("Time Difference Between Event and Sunrise vs Event"))
-# 
-# ggplot(clickpos_min, aes(x=date, y=rise.event)) + 
-#   geom_violin() + 
-#   ggtitle("Time Difference Between Event and Sunrise vs Event")+
-#   labs(y= "difftime event to sunrise(hrs)", x = "event")
-# 
-# #### Plots showing the time difference between event and sunset on y axis, date on x axis 
-# plot(date, set.event, ylab = c("difftime event to sunset (min)"), xlab = c("event"), main = c("Time Difference Between Event and Sunset vs Event"))
-# 
-# ggplot(clickpos_min, aes(x=date, y=set.event)) + 
-#   geom_violin() + 
-#   ggtitle("Time Difference Between Event and Sunset vs Event") +
-#   labs(y= "difftime event to sunset(hrs)", x = "event")
-
-#### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
-hist(clickpos_min$riseset.event, main= c("Frequency of Click Positive Minutes per Hours after Sunrise or Sunset"), xlab = c("Hours Since Sunrise/Sunset"))
-
-ggplot(data = clickpos_min, aes(x = riseset.event)) + #removed fill = Year due to error "object 'Year' not found
-  geom_histogram(binwidth = 0.17) +
-  theme_minimal()
+  mutate(sunrise = sunrise(datetime, lon = -67.0467, lat = 17.9455)) %>%
+  mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455)) %>%
+  mutate(rise.event = abs(difftime(datetime, sunrise, tz = "UTC", units = "hours"))) %>%
+  mutate(set.event = abs(difftime(datetime, sunset, tz = "UTC", units = "hours"))) %>%
+  mutate(riseset.event = ifelse(abs(rise.event) < abs(set.event), rise.event, set.event)) %>%
+  mutate(closest_event = ifelse(abs(rise.event) < abs(set.event), "sunrise", "sunset"))
 
 #### Divides data into 10 minute bins from sunrise or sunset (e.g. 0-10 min from rise/set)
-
-riseset_binned <- clickpos_min %>%
+riseset_binned_min <- clickpos_min %>%
   mutate(riseset.min = riseset.event*60) %>% #converts hours since sunrise or sunset to minutes since sunrise or sunset
   mutate(diel.bins = cut(x=riseset.min, breaks=seq(0,700,10), labels = FALSE))
 
 #### Groups bins by recording period and counts the number of click positive minutes(events?) in each bin
-bin_summary <- riseset_binned %>% 
+bin_summary <- riseset_binned_min %>% 
   group_by(diel.bins, recordName) %>%
   summarize(nMin=n()) %>% 
   ungroup() %>% 
@@ -148,7 +125,6 @@ check_zeroinflation(poiss.model.three)
 
 AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 
-<<<<<<< HEAD
 # nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
 #                                              Quarter +
 #                                              Farm_location,
@@ -158,18 +134,18 @@ AIC(poiss.model.q, poiss.model.one, poiss.model.two, poiss.model.three)
 #                           extra = "R^2")
 # 
 # plot(nMin.crepuscular.dredge)
-=======
-#Model selection using dredge
-nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
-                                             Quarter +
-                                             Farm_location,
-                                           data = bin_summary,
-                                           family = poisson,
-                                           na.action = na.fail),
-                          extra = "R^2")
 
-plot(nMin.crepuscular.dredge)
->>>>>>> b517688eb2d0e72c002f58323b6566f78bb8a5b8
+# #Model selection using dredge
+# nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins +
+#                                              Quarter +
+#                                              Farm_location,
+#                                            data = bin_summary,
+#                                            family = poisson,
+#                                            na.action = na.fail),
+#                           extra = "R^2")
+# 
+# plot(nMin.crepuscular.dredge)
+# 
 
 #plots residuals; some pattern expected because categorical data
 res <- residuals(poiss.model.two)
@@ -188,13 +164,42 @@ plot(parameters(poiss.model.two))
 
 
 # histogram showing number of click positive minutes by diel bin
-ggplot(data = bin_summary, aes(x=diel.bins, y = nMin, fill = Farm_location)) +
+ggplot(data = bin_summary, aes(x=diel.bins_binned, y = nMin, fill = Farm_location)) + # Can be changed to diel.bins for higher resolution
   geom_bar(stat = "identity", position = "dodge") +
   theme_minimal() +
   scale_fill_manual(values=pnw_palette(n=6,name="Winter")[c(4.5,5.5)],
-                     name = "Farm location") +
-  labs(x= "bins", y= "difftime from event to sunrise/sunset(hrs)") +
+                    name = "Farm location") +
+  labs(x= "binned bins representing time (min) since sunrise or sunset", y= "number of bins") +
   ggtitle("Time Difference Between Event and Sunrise vs Event")
-  
 
+# Create a ridgeline plot based on the number of interactions by diel bins
+ggplot(bin_summary, aes(x = diel.bins, y = as.factor(diel.bins), fill = Farm_location)) +
+  geom_density_ridges(alpha = 0.8, scale = 2.5, rel_min_height = 0.01) +  # Adjust scale for spacing
+  scale_x_continuous(breaks = seq(0, 70, by = 10), limits = c(0, 70)) +  # Adjust x-axis breaks
+  scale_y_discrete(labels = unique(bin_summary$diel.bins)) +  # Y-axis labels from binned data
+  scale_fill_manual(values = c("Rom" = "aquamarine3", "ML" = "steelblue1")) +  # Custom colors
+  labs(
+    title = "Ridgeline Plot of Click Positive Minutes by Diel Bins",
+    x = "Diel Bins (Minutes from Sunrise/Sunset)",
+    y = "Diel Bins"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "right")  # Adjust legend position if needed
+
+#SECOND RIDGELINE
+
+ggplot(data = bin_summary, aes(x = diel.bins_binned, y = as.factor(nMin), fill = Farm_location)) +
+  geom_density_ridges(alpha = 0.8, scale = 1.5, rel_min_height = 0.01) +
+  scale_x_discrete(
+    expand = expansion(mult = c(0.00001, 0.00001)),  # Add space on both sides of the x-axis
+    breaks = unique(bin_summary$diel.bins_binned)  # Unique values for breaks
+  ) +  
+  scale_fill_manual(values = c("Rom" = "aquamarine3", "ML" = "steelblue1")) + 
+  labs(
+    x = "Number of Bins (Time in min since Sunrise or Sunset)", 
+    y = "Binned Time (min)"
+  ) +
+  ggtitle("Time Difference Between Event and Sunrise vs Event") +
+  theme_minimal() +
+  theme(legend.position = "right")  # Adjust legend position as needed
 
