@@ -41,12 +41,28 @@ Nmin_record %>%
 clickpos_min <- PosDB_filt %>%
   mutate(date = as.Date(UTC, tryFormats = c("%Y-%m-%d"))) %>%
   mutate(datetime = strptime(UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
+  mutate(local.event.time = format(datetime, tz = "Etc/GMT-4")) %>% 
+
   mutate(sunrise = sunrise(datetime, lon = -67.0467, lat = 17.9455)) %>%
+  mutate(sunrise.before = sunrise(datetime - 24*60*60, lon = -67.0467, lat = 17.9455)) %>% 
   mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455)) %>%
+  mutate(sunset.before = sunset(datetime - 24*60*60, lon = -67.0467, lat = 17.9455)) %>% 
   mutate(rise.event = difftime(datetime, sunrise, tz = "UTC", units = c("hours"))) %>%  # Keep the sign
+  mutate(rise.event.before = difftime(datetime, sunrise.before, tz = "UTC", units = c("hours"))) %>%  # Keep the sign
   mutate(set.event = difftime(datetime, sunset, tz = "UTC", units = c("hours"))) %>%  # Keep the sign
-  mutate(closest.to.event = ifelse(rise.event < set.event, rise.event, set.event)) %>%
-  mutate(closest = ifelse(rise.event < set.event, "sunrise", "sunset"))
+  mutate(set.event.before = difftime(datetime, sunset.before, tz = "UTC", units = c("hours"))) %>%  # Keep the sign
+  pivot_longer(set.event:set.event.before, names_to = "sunset.option", values_to = "closest.sunset") %>% 
+  group_by(datetime) %>% 
+  mutate(abs.time = abs(closest.sunset)) %>% 
+  slice_min(abs.time) %>%
+  dplyr::select(-c(abs.time, sunset.option)) %>% 
+  ungroup() %>% 
+  pivot_longer(rise.event:rise.event.before, names_to = "sunrise.option", values_to = "closest.sunrise") %>% 
+  group_by(datetime) %>% 
+  mutate(abs.time = abs(closest.sunrise)) %>% 
+  slice_min(abs.time) %>% 
+  dplyr::select(-sunrise.option, -abs.time)
+  
 
 # Extract the time component (hours and minutes) from 'sunrise' and 'sunset' columns
 times_df <- clickpos_min %>%
@@ -61,18 +77,19 @@ range(times_df$sunset_time, na.rm = TRUE)
 # View the new dataframe with sunrise and sunset times
 head(times_df)
 
-
-# Reshape the data to long format
-clickpos_long <- clickpos_min %>%
-  pivot_longer(cols = c(rise.event, set.event), 
-               names_to = "event_type", 
-               values_to = "time_difference")
-
 # Extract time from datetime and convert to decimal hours
 clickpos_min <- clickpos_min %>%
   mutate(event_time = hour(datetime) + minute(datetime) / 60)  # Convert to decimal hours
 
+# Reshape the data to long format
+clickpos_long <- clickpos_min %>%
+  pivot_longer(cols = c(closest.sunrise, closest.sunset), 
+               names_to = "event_type", 
+               values_to = "time_difference")
+
+
 # Reshape the data to long format to include sunrise and sunset times
+## change this to select the appropriate sunrise or sunset
 clickpos_long <- clickpos_min %>%
   dplyr::select(datetime, sunrise, sunset) %>%  # Select relevant columns
   pivot_longer(cols = c(datetime, sunrise, sunset), 
@@ -91,12 +108,12 @@ clickpos_long_filtered <- clickpos_long %>%
 # Adjust the x-axis for Puerto Rico time (UTC-4)
 simple.hist <- ggplot(data = clickpos_long_filtered, aes(x = (event_hour - 4) %% 24)) + 
   # Add the histogram bars
-  geom_histogram(binwidth = 0.1, fill = "darkblue", color = "black") +  
-  scale_x_continuous(breaks = seq(0, 23, by = 1), limits = c(0, 23)) +  
+  geom_histogram(breaks = seq(0,24,by=1), fill = "darkblue", color = "black") +  
+  scale_x_continuous(breaks = seq(0, 24, by = 1), limits = c(0, 24)) +  
   labs(
-    title = "Histogram of Event Occurrences by Hour (AST)",
-    x = "Time of Day (Hours, Puerto Rico Time)",
-    y = "Number of Events"
+    #title = "Number of Farm Interactions by Time of Day",
+    x = "Local Time of Day (AST)",
+    y = "Number of Farm Interactions"
   ) +
   theme_minimal() +
   theme(legend.position = "none")
@@ -116,60 +133,36 @@ clickpos_min2 <- PosDB_filt %>%
   mutate(sunrise = sunrise(datetime, lon = -67.0467, lat = 17.9455)) %>%
   mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455)) %>%
   mutate(rise.event = difftime(datetime, sunrise, tz = "UTC", units = "hours")) %>%
-  mutate(set.event = difftime(datetime, sunset, tz = "UTC", units = "hours"))
-
-# Filtering to keep only the closest event (sunrise or sunset)
-clickpos_long_filtered2 <- clickpos_min2 %>%
-  pivot_longer(cols = c(rise.event, set.event), 
-               names_to = "event_type", 
-               values_to = "time_difference") %>%
-  group_by(datetime) %>%
-  filter(abs(as.numeric(time_difference)) == min(abs(time_difference))) %>%
-  ungroup()
-
-# Reshaped data is now ready for analysis and plotting.
-# Convert time differences to numeric format
-clickpos_min2 <- clickpos_min2 %>%
-  mutate(rise.event = as.numeric(rise.event)) %>%
-  mutate(set.event = as.numeric(set.event)) 
-# ### Plots showing the time difference between event and sunrise on y axis, date on x axis
-# #720 minutes = 12 hours (the time between sunrise and sunset at the equinox)
-# plot(clickpos_min$datetime, clickpos_min$rise.event, ylab = c("difftime event to sunrise (hrs)"), xlab = c("event"), main = c("Time Difference Between Event and Sunrise vs Event"))
-# 
-# ggplot(clickpos_min, aes(x=date, y=rise.event)) +
-#   geom_violin() +
-#   ggtitle("Time Difference Between Event and Sunrise vs Event")+
-#   labs(y= "difftime event to sunrise(hrs)", x = "event")
-# 
-# #### Plots showing the time difference between event and sunset on y axis, date on x axis
-# plot(clickpos_min$date, clickpos_min$set.event, ylab = c("difftime event to sunset (min)"), xlab = c("event"), main = c("Time Difference Between Event and Sunset vs Event"))
-# 
-# ggplot(clickpos_min, aes(x=date, y=set.event)) +
-#   geom_violin() +
-#   ggtitle("Time Difference Between Event and Sunset vs Event") +
-#   labs(y= "difftime event to sunset(hrs)", x = "event")
-
-#### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
-# Histogram using base R
-# Convert time differences to numeric format
-clickpos_min2 <- clickpos_min2 %>%
+  mutate(set.event = difftime(datetime, sunset, tz = "UTC", units = "hours")) %>% 
   mutate(rise.event = as.numeric(rise.event)) %>%
   mutate(set.event = as.numeric(set.event))
 
+# Filtering to keep only the closest event (sunrise or sunset)
+clickpos_long_filtered2 <- clickpos_min %>%
+  pivot_longer(cols = c(closest.sunrise, closest.sunset), 
+               names_to = "event_type", 
+               values_to = "time_difference") %>% 
+  group_by(datetime) %>%
+  slice_min(abs(time_difference)) %>%
+  ungroup()
+
+#### Histogram showing number of click positive minutes vs the time since either sunrise or sunset
+# Histogram using base R
+
 # Filter to only keep the closest event (sunrise or sunset) for each row
-clickpos_filtered2 <- clickpos_min2 %>%
-  mutate(closest_event = ifelse(abs(rise.event) < abs(set.event), "sunrise", "sunset")) %>%
-  mutate(closest_time = ifelse(abs(rise.event) < abs(set.event), rise.event, set.event)) %>%
-  dplyr::select(closest_event, closest_time)
+# clickpos_filtered2 <- clickpos_min2 %>%
+#   mutate(closest_event = ifelse(abs(rise.event) < abs(set.event), "sunrise", "sunset")) %>%
+#   mutate(closest_time = ifelse(abs(rise.event) < abs(set.event), rise.event, set.event)) %>%
+#   dplyr::select(closest_event, closest_time)
 
 # Reshape the data into long format for ggplot
-clickpos_long_filtered2 <- clickpos_min2 %>%
-  pivot_longer(cols = c(rise.event, set.event), 
-               names_to = "event_type", 
-               values_to = "time_difference") %>%
-  group_by(datetime) %>%  # Group by each event's timestamp
-  filter(abs(time_difference) == min(abs(time_difference))) %>%  # Keep only the closest event
-  ungroup()  # Ungroup to return to original data structure
+# clickpos_long_filtered2 <- clickpos_min2 %>%
+#   pivot_longer(cols = c(rise.event, set.event), 
+#                names_to = "event_type", 
+#                values_to = "time_difference") %>%
+#   group_by(datetime) %>%  # Group by each event's timestamp
+#   filter(abs(time_difference) == min(abs(time_difference))) %>%  # Keep only the closest event
+#   ungroup()  # Ungroup to return to original data structure
 
 # Plot the data with stacked panels
 ggplot(clickpos_long_filtered2, aes(x = time_difference)) +
@@ -184,10 +177,10 @@ ggplot(clickpos_long_filtered2, aes(x = time_difference)) +
   theme_minimal()
 
 # Define new labels for the event types
-event_labels <- c("rise.event" = "Sunrise", "set.event" = "Sunset")
+event_labels <- c("closest.sunrise" = "Sunrise", "closest.sunset" = "Sunset")
 
 # Define custom colors for the events
-custom_colors <- c("rise.event" = "aquamarine3", "set.event" = "steelblue1")  # Example colors
+custom_colors <- c("closest.sunrise" = "aquamarine3", "closest.sunset" = "steelblue1")  # Example colors
 
 # Create the ridgeline plot with renamed event types and specified order
 ggplot(clickpos_long_filtered2, aes(x = time_difference, 
@@ -206,4 +199,28 @@ ggplot(clickpos_long_filtered2, aes(x = time_difference,
   theme_minimal() +
   theme(legend.position = "none")
 
+
+#### OLD CODE
+
+# Reshaped data is now ready for analysis and plotting.
+# Convert time differences to numeric format
+# clickpos_min2 <- clickpos_min2 %>%
+#   mutate(rise.event = as.numeric(rise.event)) %>%
+#   mutate(set.event = as.numeric(set.event)) 
+# ### Plots showing the time difference between event and sunrise on y axis, date on x axis
+# #720 minutes = 12 hours (the time between sunrise and sunset at the equinox)
+# plot(clickpos_min$datetime, clickpos_min$rise.event, ylab = c("difftime event to sunrise (hrs)"), xlab = c("event"), main = c("Time Difference Between Event and Sunrise vs Event"))
+# 
+# ggplot(clickpos_min, aes(x=date, y=rise.event)) +
+#   geom_violin() +
+#   ggtitle("Time Difference Between Event and Sunrise vs Event")+
+#   labs(y= "difftime event to sunrise(hrs)", x = "event")
+# 
+# #### Plots showing the time difference between event and sunset on y axis, date on x axis
+# plot(clickpos_min$date, clickpos_min$set.event, ylab = c("difftime event to sunset (min)"), xlab = c("event"), main = c("Time Difference Between Event and Sunset vs Event"))
+# 
+# ggplot(clickpos_min, aes(x=date, y=set.event)) +
+#   geom_violin() +
+#   ggtitle("Time Difference Between Event and Sunset vs Event") +
+#   labs(y= "difftime event to sunset(hrs)", x = "event")
 

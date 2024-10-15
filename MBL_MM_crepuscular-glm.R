@@ -23,35 +23,37 @@ library(ggridges)
 #### Read in data ----------------------------------------------------------
 
 load("click_event_interactions.Rdata")
+load("put_file_name_here.Rdata") #data objects from MBL_MM_crepuscular-plots.R
 
 #### Plot showing number of minutes analyzed -----------------------------------
 
-Nmin_record %>% 
-  separate(recordName, sep = "_", into = c(NA, "Year", "month"), remove = FALSE) %>% 
-  separate(month, sep = "-", into = c("month", NA)) %>% 
-  mutate(date = as.Date(month, tryFormats = "%m%d")) %>% 
-  mutate(month = month(date)) %>% 
-  mutate(month = as.factor(month)) %>% 
-  ggplot(aes(x = month, y = nMinTotal, fill = Year)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_manual(values = c("2021" = "#005A32", "2022" = "lightblue", "2023" = "steelblue", "2023-2024" = "#ADDD8E", "2024" = "green3")) +
-  theme_minimal()
+# Nmin_record %>% 
+#   separate(recordName, sep = "_", into = c(NA, "Year", "month"), remove = FALSE) %>% 
+#   separate(month, sep = "-", into = c("month", NA)) %>% 
+#   mutate(date = as.Date(month, tryFormats = "%m%d")) %>% 
+#   mutate(month = month(date)) %>% 
+#   mutate(month = as.factor(month)) %>% 
+#   ggplot(aes(x = month, y = nMinTotal, fill = Year)) +
+#   geom_bar(stat = "identity", position = "dodge") +
+#   scale_fill_manual(values = c("2021" = "#005A32", "2022" = "lightblue", "2023" = "steelblue", "2023-2024" = "#ADDD8E", "2024" = "green3")) +
+#   theme_minimal()
 
 #### Add sunrise and sunset times, get the time difference between event and closest sunrise/sunset time
 
-clickpos_min <- PosDB_filt %>%
-  mutate(date = as.Date(UTC, tryFormats = c("%Y-%m-%d"))) %>%
-  mutate(datetime = strptime(UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
-  mutate(sunrise = sunrise(datetime, lon = -67.0467, lat = 17.9455)) %>%
-  mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455)) %>%
-  mutate(rise.event = abs(difftime(datetime, sunrise, tz = "UTC", units = "hours"))) %>%
-  mutate(set.event = abs(difftime(datetime, sunset, tz = "UTC", units = "hours"))) %>%
-  mutate(riseset.event = ifelse(abs(rise.event) < abs(set.event), rise.event, set.event)) %>%
-  mutate(closest_event = ifelse(abs(rise.event) < abs(set.event), "sunrise", "sunset"))
+# clickpos_min <- PosDB_filt %>%
+#   mutate(date = as.Date(UTC, tryFormats = c("%Y-%m-%d"))) %>%
+#   mutate(datetime = strptime(UTC, tz = c("UTC"), format = c("%Y-%m-%d %H:%M:%S"))) %>%
+#   mutate(sunrise = sunrise(datetime, lon = -67.0467, lat = 17.9455)) %>%
+#   mutate(sunset = sunset(datetime, lon = -67.0467, lat = 17.9455)) %>%
+#   mutate(rise.event = abs(difftime(datetime, sunrise, tz = "UTC", units = "hours"))) %>%
+#   mutate(set.event = abs(difftime(datetime, sunset, tz = "UTC", units = "hours"))) %>%
+#   mutate(riseset.event = ifelse(abs(rise.event) < abs(set.event), rise.event, set.event)) %>%
+#   mutate(closest_event = ifelse(abs(rise.event) < abs(set.event), "sunrise", "sunset"))
 
 #### Divides data into 10 minute bins from sunrise or sunset (e.g. 0-10 min from rise/set)
-riseset_binned_min <- clickpos_min %>%
-  mutate(riseset.min = riseset.event*60) %>% #converts hours since sunrise or sunset to minutes since sunrise or sunset
+riseset_binned_min <- clickpos_long_filtered2 %>%
+  mutate(time_difference = as.numeric(time_difference)) %>% 
+  mutate(riseset.min = abs(time_difference)*60) %>% #converts hours since sunrise or sunset to minutes since sunrise or sunset
   mutate(diel.bins = cut(x=riseset.min, breaks=seq(0,700,10), labels = FALSE))
 
 #### Groups bins by recording period and counts the number of click positive minutes(events?) in each bin
@@ -76,7 +78,7 @@ corrplot(cor.test, type="upper", order="hclust", addCoef.col = "black")
 
 #mean and variance of response variable
 mean(bin_summary$nMin) #1.74
-var(bin_summary$nMin) #1.74
+var(bin_summary$nMin) #0.865
 
 #### Models binned sunrise and sunset data (glm)
 
@@ -164,12 +166,12 @@ plot(parameters(poiss.model.two))
 
 
 # histogram showing number of click positive minutes by diel bin
-ggplot(data = bin_summary, aes(x=diel.bins_binned, y = nMin, fill = Farm_location)) + # Can be changed to diel.bins for higher resolution
-  geom_bar(stat = "identity", position = "dodge") +
+ggplot(data = bin_summary, aes(x=diel.bins, y = nMin)) + # Can be changed to diel.bins for higher resolution
+  geom_bar(stat = "identity") +
   theme_minimal() +
   scale_fill_manual(values=pnw_palette(n=6,name="Winter")[c(4.5,5.5)],
                     name = "Farm location") +
-  labs(x= "binned bins representing time (min) since sunrise or sunset", y= "number of bins") +
+  labs(x= "Absolute time difference to sunrise/sunset event", y= "Number of events") +
   ggtitle("Time Difference Between Event and Sunrise vs Event")
 
 # Create a ridgeline plot based on the number of interactions by diel bins
