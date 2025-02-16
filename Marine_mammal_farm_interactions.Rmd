@@ -1,6 +1,6 @@
 ---
-title: 'Toward sustainable macroalgal aquaculture: Marine mammal interactions with algae farms in the Carribbean Sea'
-author: "Amy M. Van Cise^1*^, Luis R. Rodriguez^2^, Clifford Goudey^3^, Mollie Ball^1^, Gretchen Grebe^3^, Loretta Roberson^3^"
+title: 'Toward sustainable seaweed aquaculture: Marine mammal interactions with macroalgae farms in the Carribbean Sea'
+author: "Amy M. Van Cise^1\\*^, Luis R. Rodriguez^2^, Clifford Goudey^3^, Mollie Ball^1^, Gretchen Grebe^3^, Loretta Roberson^3^"
 
 output: 
     html_document:
@@ -32,33 +32,27 @@ Running page head: *Dolphin interactions with algae farms*
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
-knitr::opts_chunk$set(
- fig.width = 6,
- fig.height = 4
-)
-
 library(tidyverse)
-library(ggsci)
+library(PNWColors)
+library(viridis)
 library(pander)
-library(captioner)
 library(english)
-library(phyloseq)
 library(magrittr)
 library(rbbt)
 library(patchwork)
 library(png)
-library(lubridate)
-library(ggOceanMaps)
-library(ggspatial)
-library(cowplot)
-
 
 load("click_event_interactions.Rdata")
+load("Farm_interactions_figs.Rdata")
+load("delphinid_diel_activity_plots.Rdata")
+load("delphinid_diel_activity_data.Rdata")
+load("detect_binom.Rdata")
+load("farmLoc_map.Rdata")
 ```
 
 ## ABSTRACT {-#ABSTRACT}
 
-Global development of macroalgae farms is rapidly increasing due to growing demand for macroalgae in food, biofuel, cosmetic, and scientific markets, among others. The development of tropical macroalgal farms within the U.S. EEZ is a promising sector of economic growth, especially for small island economies such as Puerto Rico. However, the development of these farms increases risk to marine mammals and other protected species, and may lead to negative outcomes such as habitat exclusion, behavioral alteration, or entanglement. Acoustic monitoring conducted during the development of a small-scale macroalgae farm off the coast of La Parguera, Puerto Rico, indicates no long-term effect of the farm structure on the behavior of bottlenose dolphins that inhabit the region. Data were recorded on a near-continuous basis using a SoundTrap ST 300, duty-cycled to record 1 out of every 5 minutes. Delphinids were detected at the farm in approximately XX% of the recorded time period, and were visually observed during XX of XXX total farm vists during a three-year farm development period (2021-2024). We used generalized additive models to predict the number and duration of dolphin interactions during each recording period, and found that there was no effect of season, year, or the type of aquaculture equipment on the number or duration of dolphin interactions with the farm. Farm location had a significant effect on the number of delphinid interactions with the farm, but not the duration of delphinid interactions, indicating the possiblity that delphinids frequent the area aroung the Romero reef more frequently than the Media Luna reef.
+Global development of macroalgae farms is rapidly increasing due to growing demand for macroalgae in food, biofuel, cosmetic, and scientific markets, among others. The development of tropical macroalgal farms within the U.S. EEZ is a promising sector of economic growth, especially for small island economies such as Puerto Rico. However, the development of these farms increases risk to marine mammals and other protected species, and may lead to negative outcomes such as habitat exclusion, behavioral alteration, or entanglement. Acoustic monitoring conducted during the development of a small-scale macroalgae farm off the coast of La Parguera, Puerto Rico, indicates no long-term effect of the farm structure on the behavior of delphinids that inhabit the region. Acoustic data were recorded for approximately 10 days of every month between Jan 2021 - Jan 2024, using a SoundTrap ST 300 programmed to record 1 out of every 5 minutes. Delphinids were detected at the farm in approximately 1% of the study period. The greatest rate of interaction was detected at the Romero farm site immediately after farm installation; farm interaction decreased rapidly and did not increase over the study period. Using generalized additive models to we found that delphinid probability of detection was significantly affected by season (Julian Date), proximitey to sunrise/sunset, and farm location. Farm interactions exhibited a marked diel pattern - increasing significantly with proximity to sunrise or sunset - aligning with previous research indicating crepuscular activity in delphinids.  This relationship was significantly stronger at the Romero farm site. The results of this research indicate that delphinids are able to safely interact with the taut-line marcoalgae farm structures used in this study; however, future work is required to determine whether placement of the farm structures caused a change of habitat use or behavior. Additional research would be needed to determine whether non-delphinid marine mammals, not observed during the study period, can also safely interact with the proposed farm structure.
 
 <br>
 
@@ -73,170 +67,90 @@ Aquaculture is a major component of the United Nations 2030 Agenda for Sustainab
 
 Carrageenan-rich macroalgaes are increasingly harvested for use in food production, synthetics, and biofuels (@campbell_hotchkiss17). The global market for carrageenan-rich marcoalgaes was valued at over \$850 million in 2022, and expected to increase to \$1.32 billion by 2030 (@researchandmarkets23) - motivating the development of warm-water macroalgae farms within the United States Exclusive Economic Zone (EEZ). The global cultivation of *Euchema* spp. and *Gracilaria* spp., two carageenan-rich tropical magroalgaes, has steadily grown since 2000 and currently represents nearly 40% of global macroalgae aquaculture @fao22. The potential economic effect of large-scale macroalgae farms may be significant, especially to small island economies such as those in the Gulf of Mexico,which rely heavily on marine resources and are increasingly threatened by pollution, climate change, fishing pressure, and loss of tourism revenue (@clegg_etal22). In addition to providing economic benefit to local communities in the Gulf of Mexico, the development of large coastal farms may reduce coastal erosion, prevent eutrophication by removing excess nutrients, and provide new habitat for local wildlife (@tanaka_etal20; @theuerkauf_etal22; @walls_etal16).
 
-Within the United States, seaweed has traditionally been consumed by native Alaskans [@dombrowski07] and Hawaiians [@reed_reed07]. It has also been wild-harvested consumed in Maine for over a century [@levine97]. However, the commercial seaweed aquaculture industry faced multiple challenges in the late 1900s and early 2000s. Growth of the seaweed aquaculture industry for use as biofuels, for direct consumption, or in chemical compounds was stymied by highly complex and geographically variable procedures for gaining aquaculture permits, relatively cheap and available oil and gas, and community-based hesitation about the local effects of nearshore aquaculture [@kim_etal19]. Despite these challenges, the industry has grown since 2010, with most growth concentrated in Maine, Alaska, and Washington [@kim_etal19]. The average annual U.S. commercial production of seaweed 2014-2018 exceeded 21.6 million pounds (~9,800 metric tons), most of which was cultivated within 3 miles of the U.S. shoreline [@liddel_yencho21]. Seaweed aquaculture production specifically increased by 132% from 2017-2018, and is considered by NOAA National Marine Fisheries Service to be an important growth sector in the global seafood economy [@liddel_yencho21], and by the U.S. Department of Energy as promising as a source of biofuel (ARPA-E REF HERE?). 
+Within the United States, seaweed has traditionally been consumed by native Alaskans [@dombrowski07] and Hawaiians [@reed_reed07]. It has also been wild-harvested consumed in Maine for over a century [@levine97]. However, the commercial seaweed aquaculture industry faced multiple challenges in the late 1900s and early 2000s. Growth of the seaweed aquaculture industry for use as biofuels, for direct consumption, or in chemical compounds was stymied by highly complex and geographically variable procedures for gaining aquaculture permits, relatively cheap and available oil and gas, and community-based hesitation about the local effects of nearshore aquaculture [@kim_etal19]. Despite these challenges, the industry has grown since 2010, with most growth concentrated in Maine, Alaska, and Washington [@kim_etal19]. The average annual U.S. commercial production of seaweed 2014-2018 exceeded 21.6 million pounds (~9,800 metric tons), most of which was cultivated within 3 miles of the U.S. shoreline [@liddel_yencho21]. Seaweed aquaculture production specifically increased by 132% from 2017-2018, and is considered by NOAA National Marine Fisheries Service to be an important growth sector in the global seafood economy [@liddel_yencho21], and by the U.S. Department of Energy as promising as a source of biofuel (ARPA-E REF HERE). 
 
 Despite large-scale macroalgal farming on a global scale, rigorous testing of marine mammal interactions with macroalgal farm structures is rare or nonexistent. A recent review of peer-review literature, technical memoranda, and white papers documenting marine mammal interactions with aquaculture reported interactions with finfish and mollusc aquaculture, but did not document any marine mammal interactions with macroalgal aquaculture (@bath_etal23). This review concluded that aquaculture risk to marine mammals fall primarily into three categories: habitat exclusion, entanglement, and behavioral alteration (@callier_etal18; @carretta_etal20; @clement_sagar13; @hayes_etal20; @lloyd03; @lopez12; @price_etal17). Direct interactions with finfish aquaculture are often caused by attraction to the farm (@price_etal17). Farm avoidance has been reported in multiple studies of mollusc aquaculture (@fleming_bateman18; @gaynor_etal19; @heinrich_etal19; @Kemper2010; @markowitz_etal04; @ribeiro_etal07; @vaughn_etal07)., indicating that farm structures impacts are likely to include habitat exclusion and behavioral alteration. The extent and effect of habitat exclusion will depend on the size, concentration, and location of farms (@committeeontheassessmentofthecumulativeeffectsofanthropogenicstressorsonmarinemammals_etal17; @clement_sagar13), which may impact a species or population if the excluded habitat comprises regions important to breeding, foraging, raising young, or resting (@bath_etal23). Although macroalgal farming is unlikley to attract carnivorous marine mammals, herbivores (i.e., manatees) may be attracted to nearshore farms, and some marine mammals may be attracted to fishes aggregated by farming structures (@duprey09; @pearson09). Marine mammals that directly interact with farm structures risk entanglement or entrapment, e.g. in anchor lines, horizontal longlines, and surface buoy markers (@price_etal17). Globally, entanglement in aquaculture gear is uncommon and unlikely to significantly impact marine mammals (@bath_etal23); however, the impact of entanglements on specific populations may be significant if those populations are endangered, or if the concentration of farms increases in important feeding, breeding, or resting habitat (@bath_etal23).
 
-Several species of marine mammal (N = 32 **up to 32, some sources say 21 (Fish and Wildlife), some say 30 (Ortega-Ortiz et al. 2004) and so on; fact check**) inhabit the Gulf of Mexico, including two species of endangered baleen whale - Rice's whale (*Balaenoptera ricei*) and North Atlantic right whale (*Eubalaena glacialis*) - as well as the endangered Antillean manatee (*Trichechus manatus manatus*). **Fact check this sentence** Of these species, 11 **up to 11** are coastally distributed around Puerto Rico.
+Approximately 30 marine mammals inhabit the Gulf of Mexico , although at least six of the baleen whales are observed very rarely [@wursig17; @hayes_etal20]. Most of the regular inhabitants are toothed whales (delphinids and sperm whale), as well as two baleen whales, three beaked whales, and one manatee species - no pinniped species currently inhabit the Gulf of Mexico. Among the delphinids, pantropical spotted dolphins (*Stenella attenuata*) are the most common in abundance. Nearshore waters are frequented by three species: common bottlenose dolphins (*Tursiops trucatus*, hereafter bottlenose dolphins), Atlantic spotted dolphins (*Stenella frontalis*), and the endangered Antillean manatee (*Trichechus manatus manatus*, hereafter manatee). In addition to the manatee, two species of endangered baleen whale inhabit the Gulf of Mexico - Rice's whale (*Balaenoptera ricei*, @rosel_etal21) and North Atlantic right whale (*Eubalaena glacialis*), although the latter species is one that is only an occasional visitor to the region.
 
-Only two species are commonly found in the nearshore waters off La Parguera, where the macroalgae farm is being develped: bottlenose dolphins (*Tursiops trucatus*) and Antillean manatee (*Trichechus manatus manatus*). **Fact check this sentence. LITERATURE SEARCH FOR MARINE MAMMALS IN PUERTO RICAN WATERS.** 
+Current knowledge of marine mammal distributions in Puerto Rican waters is patchy and based primarily on stranding records, two aerial surveys conducted in the early 2000s, an offshore survey supported by NOAA's National Marine Fisheries Service, and citizen sightings [@rodriguez-ferrer_etal18]. From these sources, sightings of at least 17 species have been reported in the waters off Puerto Rico. Most of those primarily inhabit waters off the continental shelf (deeper than 200m; @rodriguez-ferrer_etal18). 
 
-Bottlenose dolphins are carnivorous and therefore unlikely to be attracted to a macroalgae farm. They are also highly agile in the water and capable of remote sensing via echolocation, which may minimze their risk of entanglement during chance encounters with a macroalgae farm. Entanglement risks may arise due to their inherently curious nature or if they are attracted by fish aggregating near the farm. Manatees, in comparison, are slow-moving and less agile, which may increase their entanglement risk in the farm structure. **Include some information here about bottlenose dolphin distribution, use of habitat near La Parguera, preferred diet, etc**
+The current study documents efforts to monitor marine mammal interactions with macroalgae farms developed in two locations of the southwest coast of Puerto Rico (Figure 1): the first near Romero reef and the second near Media Luna Reef. Only two species are commonly found in these nearshore waters: bottlenose dolphins and manatees. Bottlenose dolphins frequently travel through both farm sites. Manatees in the region spend >95% of their time in nearshore regions with bottoms depths <2 m. Infrequent visits to Media Luna reef have been documented, and farm interactions are possible depending on their route of transit to the reef. Manatees are not currently known to spend time in the deeper waters where the farms were placed (REF Daniel Slone USGS report). 
 
-Manatees are herbivorous, feeding primarily on various species of seagrass (e.g. turtle grass (*Tbafassia testadinurn*), manatee grass (*Syringodium filiforme*), and shoal grass (*Halodule wrightii*)); green algae (*Ulva lactuca*) and some mangrove species comprise secondary components of their diet (@mignucci-giannoni_beck98, MORE REFS HERE). Because tropical red macroalgae are not a common component of their diet, it is unlikely that Antillean manatess will habituate to visiting macroalgae farms to forage; however, it is possible that individuals may be attracted by curiosity to a farm with significant algal biomass. **WOULD MANATEES TRAVEL THAT FAR OFFSHORE?** **Include some information here about manatee distribution, use of habitat near La Parguera, etc**
+Bottlenose dolphins are carnivorous and therefore unlikely to be attracted to a macroalgae farm. They are also highly agile in the water and capable of remote sensing via echolocation, which may minimize their risk of entanglement during chance encounters with a macroalgae farm. Entanglement risks may arise due to their inherently curious nature or if they are attracted by fish aggregating near the farm. Conversely, bottlenose dolphins may avoid the farm, which would result in a negative behavioral adaptation if the farms are located in areas that were previous used for, e.g., resting or foraging.
 
-The extent of marine mammal interactions and entanglement risk with tropical macroalgae farms has not previously been quantified. In the present study, we used acoustic monitoring to describe rate and duration of marine mammal interactions with a macroalgae farm, as well as visually assess the rate of entanglement with this farm, throughout three years of the development of a coastal macroalgae farm near Media Luna reef off the coast of La Parguera, Puerto Rico. This study provides an initial dataset and assessment of the entanglement risk of marine mammals in coastal tropical macroalgae farms. 
+Manatees are herbivorous, feeding primarily on various species of seagrass (e.g. turtle grass (*Thalassia testudinum*), manatee grass (*Syringodium filiforme*), and shoal grass (*Halodule wrightii*)); green algae (*Ulva lactuca*) and some mangrove species comprise secondary components of their diet (@mignucci-giannoni_beck98). Because tropical red macroalgae are not a common component of their diet, it is unlikely that Antillean manatess will habituate to visiting macroalgae farms to forage; however, it is possible that individuals may be attracted by curiosity to a farm with significant algal biomass. Manatees are slow-moving and less agile, which may increase their entanglement risk in the farm structure if interaction occurs. 
+
+Marine mammal interaction and entanglement risk with tropical macroalgae farms has not previously been described or quantified. Here we use acoustic monitoring of echolocation clicks to describe rate and duration of delphinid interactions and visually monitor document any marine mammal entanglements throughout the development of a coastal macroalgae farm off the coast of La Parguera, Puerto Rico. It is important to note that, due to high ambient noise coming primarily from snapping shrimp, we were not able to detect whistles and moans in the current dataset. The results of this study are the first assessment of the interaction rate and entanglement risk of marine mammals with coastal tropical macroalgae farms.
    
 ## METHODS {-#METHODS}
 
 ### Data collection
-In order to track and quantify marine mammal interactions with the seaweed farm throughout multiple stages of its development, we collected acoustic recordings at two farm development sites off the southwestern coast of Puerto Rico, nearest to Paguera city: Romero and Media Luna reefs (FIGURE HERE). Bottlenose dolphins are the only marine mammal likely to interact with farms at these locations. We deployed two farm types over the course of the experiment, which we refer to throughout this manuscript as the 5-line and the catenary farms (FIGURE HERE). We deployed the 5-line farm at both sites, and the catenary only at Media Luna. In later stages of farm development, we raised and lowered the farm in response to water temperature, in order to avoid increases in temperature that may inhibit growth or kill seaweed.
+We collected acoustic recordings at two farm development sites off the southwestern coast of Puerto Rico, nearest to Paguera city: Romero and Media Luna reefs (Figure 1). Bottlenose dolphins are the only marine mammal likely to interact with farms at these locations. We deployed two farm types over the course of the experiment, which we refer to throughout this manuscript as the 5-line and the catenary farms (FIGURE HERE). We deployed the 5-line farm at both sites, and the catenary only at Media Luna. In later stages of farm development, we raised and lowered the farm in response to water temperature, in order to avoid increases in temperature that may inhibit growth or kill seaweed.
 
 We recorded acoustic signals using a SoundTrap ST300 STD acoustic recorder (Ocean Instruments, Inc.) mounted to the XX corner of the farm (Figure). The recording package has an effective frequency range of 20 Hz - 60 kHz, noise floor less than 35 dB re 1 μPa above 2 kHz, and a sample rate up to 288 kS/s. We set recording effort to a duty-cycle of 1:5 minutes, allowing for a deployment duration of up to approximately 50 days between recorder servicing. We collected acoustic recordings on a near-continuous basis while the farm was deployed, with breaks in data collection when the recorder was brought back to the laboratory to download data and recharge the battery. Once data data were downloaded to an external hard drive, they were shipped to the University of Washington for acoustic processing.
 
 ### Data processing
-We first divided acoustic data into monthly bins, then conducted an initial automated detection step using PAMGUARD @Gillespie2009a; @Inc.2020, an open-source software package developed for detection and classification of acoustic signals from marine mammals. Using the click detection module in PAMGUARD, we built an algorithm to detect and categorize clicks into three categories: 4-15 kHz clicks with a frequency sweep, 15-32 kHz signals with a frequency sweep, and 32-45 kHz signals with a frequency sweep. These signal categories were developed based on the reported frequency range of bottlenose dolphins (REFS), the target species of interest and species most likely to interact with the farm. 
+We first divided acoustic data into monthly bins, then conducted an initial automated detection step using PAMGUARD [@Gillespie2009a; @Inc.2020], an open-source software package developed for detection and classification of acoustic signals from marine mammals. Using the click detection module in PAMGUARD, we built an algorithm to detect and categorize clicks into three categories: 4-15 kHz clicks with a frequency sweep, 15-32 kHz signals with a frequency sweep, and 32-45 kHz signals with a frequency sweep. These signal categories were developed based on the reported frequency range of bottlenose dolphins (REFS), the target species of interest and species most likely to interact with the farm. 
 
-Following automated detection, we conducted a visual validation of the detection data to filter out false positive detections. We first removed 4-15 kHz detections and unclassified detections, which do not have the acoustic characteristics of delphinid echolocation clicks.  Next, examining only detections in the 15-32 kHz range or 32-45 kHz range, we distinguished and annotated delphinid clicks from ambient noise by scanning detections to identify multiple signals in rapid succession with similar waveforms, spectra, and wigner plots, most often increasing and then decreasing in amplitude as individuals approached and then left the recorder (FIGURE HERE). All annotated clicks occurring within the same 1-minute recording were grouped together and given a click event ID.
+Following automated detection, we conducted a visual validation of the detection data to filter out false positive detections. We first removed 4-15 kHz detections and unclassified detections, which do not have the acoustic characteristics of delphinid echolocation clicks. Next, examining only detections in the 15-32 kHz range or 32-45 kHz range, we distinguished and annotated delphinid clicks from ambient noise by scanning detections to identify multiple signals in rapid succession with similar waveforms, spectra, and wigner plots, most often increasing and then decreasing in amplitude as individuals approached and then left the recorder (Supplemental Figure S2). All annotated clicks occurring within the same 1-minute recording were grouped together and given a click event ID.
 
-We filtered annotated click events to include only those events with > 20 clicks over 160 dB. To determine this threshold, we estimated the expected amplitude of received echolocation signals from delphinids near (<10 m) the farm using the following equation for sound absorption in water (REF HERE):
+Due to the prevalence of noise in the dataset and the lack of an existing classifier for marine mammals in Puerto Rico or the Gulf of Mexico, click events were not formally classified to species; therefore, we refer to all detections as delphinids throughout this manuscript.
+
+We filtered annotated click events to include only those events with > 20 clicks over 150 dB. To determine this threshold, we estimated the expected amplitude of received echolocation signals from delphinids near (<10 m) the farm using the following equation for sound absorption in water (REF):
 
 $$
 RL = SL - 20*log(r) + \alpha*r
 $$
 
-where RL is the signal's receive level, SL is the signal's source level, r is the distance in meters from the signal source, and alpha is the absorption rate. Using an absorption rate of 0.03 DB/m (REF HERE) and source level of 212 dB (REF HERE), we estimated that a received level of 160 dB indicates individuals approached to within 10 m of the recorder. This allowed us to identify likely interactions with the farm, and also limited the number of false positive interactions, as most ambient noise and false detections were concentrated below ~ 155 dB.
+where RL is the signal's receive level, SL is the signal's source level, r is the distance in meters from the signal source, and alpha is the absorption rate. Using an absorption rate of 0.03 dB/m (REF HERE) and source level of 212 dB (REF HERE), we estimated that a received level of 150 dB indicates individuals approached to within ~25 m of the recorder. This allowed us to identify likely interactions with the farm, and also limited the number of false positive interactions, as most ambient noise and false detections were concentrated below ~ 150 dB.
 
-We grouped filtered click events that occurred sequentially into farm interactions, and estimated the duration of interactions by calculating the time difference between the beginning of the first click even and the end of the last click event in the interaction.
+
 
 ### Data analysis
 
-All data analyses and plots were generated using the R coding language in R studio @RCoreTeam2016. Using a generalized linear model against the filtered dataset of annotated click events, we modeled the effect of farm location, farm type, farm depth, seasonality, and year on the number and duration of interactions with the farm during each recording period. We included the total number of minutes analyzed during each recording period as a fixed effect in the model of number of interactions with the farm. We performed model selection using a stepwise model builder in the MuMIn package in R. For both models, we chose the model parameters that minimized AICc. 
+All data analyses and plots were generated using the R coding language in R studio [@RCoreTeam2016]. To qualitatively examine shifts in the number or duration of farm interactions over the study period, we first grouped filtered click-positive minutes that occurred sequentially into farm interactions and estimated the normalized proportion of interactions (# interactions/# minutes monitoring effort). We also estimated duration of each interaction, by calculating the time difference between the beginning of the first click event and the end of the last click event in the interaction. Following this we used generalized linear models (GLMs) to test for trends in the normalized number or duration of interactions throughout the study period.
+
+We then estimated the binomial probability of interaction at each farm site using a generalized additive modeling (GAM) framework, implemented using mgcv in R (REF). We considered farm location(discrete), farm type (discrete), year (discrete), Julian Day (continuous), and diel proximity to sunrise or sunset (continuous) as potential drivers of interaction probability. Because farm type and farm location are highly correlated, we use only farm location in downstream models. Using the MuMIn package in R, we compared all possible combinations of four potential drivers: diel proximity to sunrise or sunset within each farm location and year, and Julian Day within each farm location and year. This model setup does not assume that the relationship between continuous input variables and the binomial probability is the same across all levels of discrete variables; instead, it allows fitted smoothing splines to vary within strata. We allowed model selection to occur by minimizing AIC, using REML as a secondary decision criteria. After selecting the best model, we identified significant model covariates with a p-value < 0.05 and estimated the predicted interaction probability using these covariates.
 
 ## RESULTS {-#RESULTS}
 
-Acoustic data were collected in tandem with farm deployment between January 2021 through XXX 2024 at two separate farm sites: data collection occured at Romero in 2021 and 2022, and at Media Luna in 2022 and 2023 (Figure 1). To allow for manual validation of click detections and standardize monitoring effort across months, up to 10 days of acoustic data were processed in each month when recordings were available. Table S1 summarizes the duration of each deployment, as well as the date range that was automatically processed and manually validated for clicks, the total number of minutes processed each month, and the total number of minutes with positive click detections. Figure 2 shows the total number of minutes processed each month and year.
+Acoustic data were collected in tandem with farm deployment between January 2021 through January 2024 at two separate farm sites: data collection occurred at Romero in 2021 and 2022, and at Media Luna in 2022 and 2023 (Figure 1). To allow for manual validation of click detections and standardize monitoring effort across months, up to 10 days of acoustic data were processed in each month when recordings were available. Table S1 summarizes the duration of each deployment, as well as the date range that was automatically processed and manually validated for clicks, the total number of minutes processed each month, and the total number of minutes with positive click detections. Figure 2 shows the total number of minutes processed each month and year.
 
 <br>
-```{r farm.location.design, fig.align = 'center', fig.cap = "Figure 1. Left: Location of Romero and Media Luna farm sites off the southwestern coast of Puerto Rico. Right: 5-line and catenary farm designs, showing the location of the Soundtrap recorder on each farm type."}
+```{r farm.location, fig.height = 6, fig.width = 8, fig.align = 'center', fig.cap = "Figure 1. Location of the two farm sites used in this study, near the Romero and Media Luna reefs off the southwestern coast of Puerto Rico in the Gulf of Mexico."}
 
-farm_locs <- data.frame(farm = c("Media Luna", "Romero"), lat = c(17.93888, 17.95135), long = c(-67.045555,-66.98997))
+map
 
-basemap(limits = c(-67.5,-66.5,17.7,18.3), 
-                    rotate = FALSE, bathy.style = "rbb", grid.col = NA) +
-  ggspatial::geom_spatial_point(data = farm_locs, aes(x = long, y = lat),
-                                size = 2) +
-  theme(axis.text.x=element_blank(), 
-        axis.ticks.x=element_blank(), 
-        axis.text.y=element_blank(),  
-        axis.ticks.y=element_blank(),
-        legend.position = "none",
-        axis.title.x=element_blank(),
-        axis.title.y=element_blank()) +
-  ggspatial::annotation_scale(location = "br") + 
-  ggspatial::annotation_north_arrow(location = "tr", which_north = "true")
+```
 
+```{r data_summary, fig.height = 6, fig.width = 8, fig.align = 'center', fig.cap = "Figure 2. Top: Recording effort in each month and year at both farm sites. Middle: Normalized number of farm interactions detected in each month and year throughout the study period. Bottom: Duration of farm interactions."}
+
+effort + eventsMonthly + eventDur_study + 
+  plot_layout(ncol = 1, guides = "collect") &
+  theme(legend.position = "right")
+
+```
+Automated click detection resulted in a high rate of false positives concentrated between 135 and 150 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks were removed from the final dataset during the manual validation step. Figure S2 illustrates the manual validation of click trains embedded in false positive detections.
+
+A total of `r format(sum(NminPos_near_farm$nMinTotal), big.mark = ",", scientific = FALSE)` minutes were processed through the click detection pipeline. After manual validation of automated detection and filtering to remove click trains with fewer than 10 clicks louder than 150 dB (indicating that animals were likely not within 25m of the recorder), our dataset included `r sum(NminPos_near_farm$nMinPos)`, click-positive minutes, representing approximately `r round((sum(NminPos_near_farm$nMinPos)/sum(NminPos_near_farm$nMinTotal)) * 100,digits = 2)`% of the total dataset. Grouping sequential click-positive minutes resulted in `r nrow(Event_dur_near)` total farm interactions during the study period. The normalized number of interactions per month and year at each farm location did not change significantly over the study period (Figure 2), with notable outliers at the Romero farm site in February, May, and August of 2021.
+
+<br>
+
+```{r detect_prob, fig.align = 'center', fig.cap = "Figure 3. Predicted binomial probability of the occurence of a farm interaction at each farm site. The top panel shows the effect of diel proximity to sunrise or sunset on interaction probability at each farm site, while the bottom panel shows the effect of Julian Day on interaction probability at each farm site."}
+
+p1 <- (dielDetect_year_plot + seasonalDetect_year_plot) + plot_layout(ncol = 1, axes = "collect_y", guides = "collect")
+
+eventNumloc + p1
 ```
 
 <br>
 
-```{r click.effort, fig.align = 'center', fig.cap = "Figure 2. Total number of minutes processed for click detections each month and year. All minutes were processed in three steps: 1) automated detection using PAMGUARD followed by 2) manual validation of click trains and 3) final QAQC to filter out detections with fewer than 20 clicks > 160 DB, indicating that the individual did not come within 10m of the recording platform."}
+Over the study period, date accounted for 1% of variability in the duration of interactions, ranging from `r format(round(min(Event_dur_near$eventDur), digits=2), scientific = FALSE)` - `r round(max(Event_dur_near$eventDur), digits = 2)` minutes, with a mean duration of `r round(mean(Event_dur_near$eventDur), digits = 2)` minutes (median = `r round(median(Event_dur_near$eventDur), digits = 2)` minutes). Most interactions were less than 1 minute in duration (n = `r Event_dur_near %>% filter(eventDur < 5) %>% nrow()` of the total `r sum(Event_num_near$nEvent)` interactions). 
 
-farm.labs <- c("Media Luna", "Romero")
-names(farm.labs) <- c("ML", "Rom")
-Nmin_record %>% 
-  separate(recordName, sep = "_", into = c(NA,"Year",'month'), remove = FALSE) %>% 
-  separate(month, sep = "-", into = c("month", NA)) %>% 
-  mutate(date = as.Date(month, tryFormats = "%m%d")) %>% 
-  mutate(month = month(date)) %>% 
-  mutate(month = as.factor(month)) %>% 
-  mutate(Year = as.numeric(Year)) %>% 
-  left_join(metadata, by = c("recordName","Year")) %>% 
-  ggplot(aes(x = month, y = nMinTotal, fill = as.factor(Year))) +
-  facet_wrap(~Farm_location, labeller = labeller(Farm_location = farm.labs)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_uchicago() +
-  labs(fill = "Year") +
-  ylab("Total Minutes Analyzed") +
-  xlab("Month")
-
-```
+GAM model selection indicated that the best fit model (AIC = `r round(dielDetect_dredge$AIC[1], digits = 2)`) included all four covariates and their interaction terms; however, three models with deltaAIC less than 0.01 excluded either Julian Date, proximity to sunrise/sunset, or both terms. Significant terms (p < 0.05) included farm location, proximity to sunrise/sunset in 2021 and 2022, and Julian Date in 2023 (Figure 3),explaining 15.5% of total variance in detection probability.
 
 <br>
-
-Automated click detection resulted in a high rate of false positives, concentrated between 135 and 160 dB. Due to the high level of ambient noise at the farm, both physical and biological, most automatically detected clicks (XX%) were removed from the final dataset during the manual validation step. Figure 3 illustrates the manual validation of click trains embedded in false positive detections.
-
-<br>
-
-```{r manual.validation, out.width='50%', out.height='50%', fig.align = 'center', fig.cap = "Figure 3. Panel A: An example of 1 minute of clicks detected using the PAMGUARD automated click detector. Time is on the x axis, and amplitude in DB is on the y axis. Each dot represents a single detected signal. Purple and black detections are unlikely to be delphinid clicks. Red and organge detections are likely delphinid clicks. Teal detections were manually confirmed to be part of a delphinid click train. Panel B: The same minute of acoustic data, showing only likely detections that are considered likely to be delphinid clicks. Panel C: Acoustic parameters of 1 confirmed delphinid click, showing the wafeform, spectrum, and Wigner plot characteristics used to manually validate clicks."}
-knitr::include_graphics('manualValidationExample.png')
-```
-
-<br>
-
-A total of `r format(sum(NclickPos_near_farm$nMinTotal), big.mark = ",", scientific = FALSE)` minutes were processed through the click detection pipeline. After manual validation of automated detection and filtering to remove click trains with fewer than 20 clicks louder than 160 dB (indicating that animals were likely not within 10m of the farm), our dataset included `r sum(NclickPos_near_farm$nMinPos)`, click-positive minutes, representing approximately `r round((sum(NclickPos_near_farm$nMinPos)/sum(NclickPos_near_farm$nMinTotal)) * 100,digits = 2)`% of the total dataset. Click-positive minutes were grouped together if they occurred sequentially, resulting in `r nrow(EventDBdur_near)` total documented interactions with the farm during the study period. The number of interactions per quarter and year at each farm location normalized is normalized by monitoring effort (total number of minutes analyzed per quarter and year at each farm) and shown in Figure X.
-
-<br>
-
-```{r prop.interactions, fig.align = 'center', fig.cap = "Figure 4. Proportional delphinid interactions with the farm in each quarter and year of the study period at each farm locations, shown as the total number of interactions normalized by the acoustic monitoring effort."}
-
-EventDbnum_near %>% 
-  group_by(Year, Quarter, Farm_location) %>% 
-  summarize(nEventQuarterly = (sum(nEvent)/sum(nMinTotal)), 
-            meanPosClic = mean(propClickPos)) %>% 
-  ggplot(aes(x = Quarter, y = nEventQuarterly, 
-             group = interaction(Year, Farm_location), 
-             fill = as.factor(Year))) +
-  facet_wrap("Farm_location") +
-  geom_bar(stat = "identity", position = "dodge") +
-  #geom_point() +
-  labs(fill = "Year") +
-  ylab("Num. interactions:minutes analysed") +
-  scale_fill_aaas()
-
-```
-
-<br>
-
-Mean duration of farm interactions did not change significantly over the study period or at either farm location (Figure X). The duration of interactions ranged from `r format(round(min(EventDBdur_near$eventDur), digits=2), scientific = FALSE)` - `r round(max(EventDBdur_near$eventDur), digits = 2)` minutes, with a mean duration of `r round(mean(EventDBdur_near$eventDur), digits = 2)` minutes (median = `r round(median(EventDBdur_near$eventDur), digits = 2)` minutes). Most interactions were less than 5 minutes in duration (n = `r EventDBdur_near %>% filter(eventDur < 5) %>% nrow()` of the total `r sum(EventDbnum_near$nEvent)` interactions). All outlier interactions greater than 10 minutes occured at the Romero site during the second quarter of 2021. 
-
-<br>
-
-```{r dur.interations, fig.align = 'center', fig.cap = "Figure 5. Top: Mean duration of farm interactions each quarter and year at each farm location. Bottom: Number of farm interactions binned by duration."}
-
-dur_box <- EventDBdur_near %>% 
-  group_by(Year, Quarter, Farm_location) %>% 
-  #summarize(EventDurQuarterly = mean(eventDur)) %>% 
-  ggplot(aes(x = Quarter, y = eventDur, 
-             fill = Farm_location)) +
-  geom_boxplot() +
-  facet_wrap("Year") +
-  labs(fill = "Farm location") +
-  scale_fill_aaas() +
-  ylab("Duration of interactions (min)")+
-  ylim(0,10)
-
-dur_hist <- EventDBdur_near %>% 
-  ggplot(aes(x = eventDur)) +
-  geom_histogram(fill = "purple") +
-  theme_light() +
-  ylab("Number of interactions") +
-  xlab("Duration of interactions (min)")
-
-dur_box/dur_hist
-```
-
-<br>
-
-Our GLM with highest AIC (`r round(nMin.dredge$AICc[1], digits = 2)`, next deltaAIC = `r round(nMin.dredge$delta[2], digits = 2)`) indicated that the number of farm interactions detected during each recording period was significantly affected by the total number of monitoring minutes and by farm location during the study period (Figure X). This model carried `r round(nMin.dredge$weight[1], digits = 2)` of the cumulative model weight and explaining `r round(nMin.dredge$'R^2'[1], digits = 2)*100`% of varibility in number of interactions. Models including year and quarter contributed `r round(nMin.dredge$weight[2], digits = 2)` and `r round(nMin.dredge$weight[3], digits = 2)` of the cumulative model weight, respectively, although these variables were not significant in either model. 
-
-<br>
-
-```{r interaction.model, fig.align = 'center', fig.cap = "Figure 6. Model selection table showing cumulative model weight of all models predicting the number of farm interactions during each recording period."}
-
-plot(nMin.dredge)
-
-```
 
 <br>
 
@@ -244,34 +158,25 @@ The number of farm interactions at the Romero site was significantly greater tha
 
 <br>
 
-```{r interaction_farm, fig.align = 'center', fig.cap = "Figure 7. Number of farm interactions by farm location."}
-
-ggplot(data = EventDbnum_near, aes(x = Farm_location, y = nEvent, fill = Farm_location))+
-  geom_violin()+
-  scale_fill_jama()+
-  theme_classic() +
-  ylab("Number of interactions")+
-  xlab("Farm location") +
-  theme(legend.position = "none")
-
-
-```
-
 ## DISCUSSION {-#DISCUSSION}
-  Successful deployment of various farm structures off Puerto Rico over a three year period with no marine mammal entanglements. Nearshore bottlenose dolphins interacted with the farm roughly XX% of the time.
+  No entanglements were recorded at two seaweed farms deployed off the southwest coast of Puerto Rico between January 2021 and 2024, despite regular-but-infrequent delphinid detections near the farm. Most of these interactions were less than one minute long, indicating that these animals were likely passing through the area and were not attracted to the farm structure. Over the same time period, bottlenose dolphins were observed multiple times in the vicinity of the farm (Roberson, *unpublished data*) - in all cases, the animals passed through or near the farm without stopping. These results indicate that delphinids are able to safely interact with nearshore seaweed farms, and are not attracted to the farm structures.
   
-  Most of these interactions were less than five minutes long, and likely represent the animals passing through the area. 
+  Significantly more delphinid detections occurred at the Romero farm site than at the Media Luna site, most notably during the first recording period. This observed pattern may have been caused by an initial pique of interest by delphinids passing through the area, as many delphinid species (including bottlenose dolphins) are known to be curious. Once habituated, delphinids interactions returned to normal. Alternatively, the Romero farm may have been located at a site that was previously heavily utilized by delphinids - e.g. as a resting ground or foraging site - and were excluded from the site by the development of the farm. Future studies of marine mammal interactions with macroalgal farms should include the collection of baseline data at proposed farm sites for up to 12 months before deployment of the farm structure in order to facilitate the interpretation of patterns observed after the farm is deployed.
   
-  Changes to farm structure did not affect the rate of interaction with the farm, or the duration of interactions with the farm.
-  These results indicate that bottlenose dolphins are able to safely interact with these farms in a state of low biomass. Higher algae biomass could attract more fish biomass, in turn attracting more marine mammals to the farm site. Higher algae biomass would also visually obscure the farm structure, although it may still be possible for odontocetes to detect the farm structure via echolocation. Further research and monitoring is needed to determine whether increased biomass would increase marine mammal interactions or increase the risk of entanglement in the farm structure. Future development of macroalgae farms might consider using sound-reflective lines to increase the detectability of the farm structure (REF).
-  Despite the successful deployment of nearshore farms with no observed adverse effects on local marine mammal populations, future development should take care not to extrapolate these results beyond the ecosystem in which the data were collected. All species of marine mammals will react differently to the development of farm structures; therefore the development of any macroalgal farm structure should be accompanied by careful site planning and monitoring. 
+  Delphinids exhibited diel shifts in the probability of detection near the farm, increasing with proximity to sunrise or sunset. Similar crepuscular behavior has been documented in several coastal delphinids, including bottlenose dolphins. These species follow their preferred prey offshore to deeper waters during the day and inshore to shallower waters at night - likely passing by the farm structure during that time (REFS). This diel pattern was strongest at the Romero farm location, which may be driven in part by the overall larger number of detections at that site.
   
-### Potential Future Issues
-  2/15/24 one bottlenose dolphin near the farm when research divers arrived onsite at 8:40am local time, remained with group until about 9:30am. Anectdotal evidence that animals are starting to spend more time at the farm?
-  Barracuda has been observed at the farm during Jan and Feb 2024 site visits, coinciding with early increases in algae biomass. Barracuda and bottlenose dolphins likely target similar types and sizes of fish, this may indicate that the farm is starting to aggregate smaller fish species which may attract larger predators such as the barracuda and marine mammals. Increased attraction could be a potential future concern if increased farm interaction correlates with increased entanglement rates.
+  Similarly, we observed seasonal trends in delphinid detections near the farm, with an increase in detections during winter months. Notably, this pattern was only significant during 2023, the final year of the study. 
+  
+  It is important to note that all acoustic monitoring occured while the farm carried a low biomass load. It is aniticpated that higher algae biomass could attract more fish biomass, in turn attracting more marine mammals to the farm site. Anectodally, researchers monitoring the farm structure observed bottlenose dolphins near the farm for approximately 1 hour on 15 Feb 2024, after acoustic monitoring was completed. Similarly, baracuda were observed at the farm consistenly in January and February of 2024. These observations may be related to growing algal biomass, and may be indicative of the probability of greater attraction of mobile predators to the farm in the future. Higher algae biomass would also visually obscure the farm structure, although it may still be possible for odontocetes to detect the farm structure via echolocation. Further research and monitoring is needed to determine whether increased biomass would increase marine mammal interactions or risk of entanglment in the farm structure. Future development of macroalgae farms might consider using sound-reflective lines to increase the detectability of the farm structure (REF).
+  
+  Despite the successful deployment of nearshore farms with no observed adverse effects on local marine mammal populations, future development should take care not to extrapolate these results beyond the ecosystem in which the data were collected. All species of marine mammals will react differently to the development of farm structures; therefore the development of any macroalgal farm structure should be accompanied by careful site planning and monitoring. Notably, long-term planning for macroalgal farming includes moving the farm structures into deeper offshore waters (REF). This would decrease exposure and entanglement risk for endangered manatees and increase exposure and entanglement risk for a number of odontocete species and any baleen whales passing through the area. Several critically endangered baleen whales occupy offshore waters in the Carribbean and U.S. North Atlantic Ocean EEZ, including Rice's whale and the North Atlantic right whale (REF). Entanglement is a threat to both of these species (REF). While this study indicates that echolocating odontocete cetaceans are likely to be able to interact safely with the farm, it is unknown whether farm interactions by baleen whales would result in entanglement. 
+  
+  Detection of baleen whales in the waters surrounding Puerto Rico is rare; nontheless, any development of offshore macroalgae farms should be accompanied by robust visual and acoustic surveys of baleen whale abundance before farm development. A successful macroalgae farm would be placed in a site that minimizes the likelihood of interactions from either of these species, and would be accompanied by regular monitoring to ensure early detection of any entanglements that do occur. Ideally, a real-time, automated acoustic detection system such as has been implemented for North Atlantic right whales in Cape Cod Bay (REF) would be implemented alongside any farms deployed in offshore sites where there is higher risk of entanglement.
+    
+### TODO
      More algal biomass means heavier lines, which means more floats are needed to keep them at the proper depth. Greater entanglement risk.
     Moving farms offshore may increase entanglement risk for offshore cetaceans, most notably endangered baleen whales such as NARW and Rice's whale.
-    Of note, there is interest in moving macroalgal farms offshore to increase the scale of production (REF), which would increase the number of marine mammal species that may potentially interact with the farm structure. Notably, several critically endangered baleen whales occupy offshore waters in the Carribbean and U.S. North Atlantic Ocean EEZ, including Rice's whale and the North Atlantic right whale (REF). Entanglement is a threat to both of these species (REF). A successful macroalgae farm would be placed in a site that minimizes the likelihood of interactions from either of these species, and would be accompanied by regular monitoring to ensure early detection of any entanglements that do occur. Ideally, a real-time, automated acoustic detection system such as has been implemented for North Atlantic right whales in Cape Cod Bay (REF) would be implemented alongside any farms deployed in offshore sites where there is higher risk of entanglement.
+    
     
 ## REFERENCES {-#REFERENCES}
 <div id="refs"></div>
@@ -280,13 +185,18 @@ ggplot(data = EventDbnum_near, aes(x = Farm_location, y = nEvent, fill = Farm_lo
 
 <br>
 
-## FIGURES {-#FIGURES}
+## SUPPLEMENTAL MATERIALS
 
-1. Map of farm locations, annual/seasonal monitoring effort at each location
-2. 3D rendering of spar and cat farms, shown in water (label distance above bottom and approximate water depth)
-3. Violin plots: #visits/month, duration visits/month, Rom spar vs ML spar vs ML cat
-4. Daily behavior: #/duration of visits dawn/dusk vs not - have Mollie make this figure. Add this variable to models?
-5. click/noise ratio above and below 160dB
-6. Annual changes?
+```{r figure_s1, fig.cap = "Supplemental Figure S1. Bird's eye and profile views of the 5-line mini farm structure deployed at the Romero farm site in 2021 (top) and the caternary array farm structure deployed at the Media Luna farm site starting in 2022 through the remainder of the study (bottom)."}
 
+minifarm <- grid::rasterGrob(magick::image_read('Mini-birds-eye-profile.png'))
+catfarm <- grid::rasterGrob(magick::image_read('Cat-birds-eye.png'))
 
+wrap_elements(minifarm) + catfarm 
+  plot_layout(ncol = 1)
+
+```
+
+```{r manual.validation, out.width='50%', out.height='50%', fig.align = 'center', fig.cap = "Supplemental Figure S2. Panel A: An example of 1 minute of clicks detected using the PAMGUARD automated click detector. Time is on the x axis, and amplitude in DB is on the y axis. Each dot represents a single detected signal. Purple and black detections are unlikely to be delphinid clicks. Red and organge detections are likely delphinid clicks. Teal detections were manually confirmed to be part of a delphinid click train. Panel B: The same minute of acoustic data, showing only likely detections that are considered likely to be delphinid clicks. Panel C: Acoustic parameters of 1 confirmed delphinid click, showing the wafeform, spectrum, and Wigner plot characteristics used to manually validate clicks."}
+knitr::include_graphics('manualValidationExample.png')
+```
