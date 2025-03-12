@@ -13,7 +13,10 @@ library(patchwork)
 
 options(ggOceanMaps.userpath = "G:/My Drive/03 Current Research/05 MBL algae farm/01-MM-interactions-with-seaweed-farming/crm_vol9.nc")
 
-register_stadiamaps("YOUR-API-KEY-HERE", write = TRUE)
+#register_stadiamaps("YOUR-API-KEY-HERE", write = TRUE)
+
+pr_shp <- read_sf("G:/My Drive/03 Current Research/05 MBL algae farm/01-MM-interactions-with-seaweed-farming/PR_shp/pvishrpl.shp") %>% 
+  st_set_crs(4326)
 
 #### make map ------------------------------------------------------------------
 
@@ -26,8 +29,10 @@ inset_box <- data.frame(lon = c(-67.25, -67.25, -66.7, -66.7), lat = c(17.8, 18.
 world <- ne_coastline(scale = 10, returnclass = "sf")
 
 small_map <- basemap(limits = c(-67.3,-66.25,17.7,18.4), 
-                     rotate = FALSE, bathy.style = "rub", grid.col = NA) +
-  #geom_sf(data = world)+
+                     rotate = FALSE, bathy.style = "rub", grid.col = NA,
+                     crs = 4326, land.col = "transparent", land.border.col = "transparent") +
+  geom_sf(data = pr_shp) +
+  coord_sf(xlim = c(-67.15,-66.6), ylim = c(17.8,18.25)) +
   #coord_sf(xlim = c(-67.25,-66.7), ylim = c(17.8,18.1)) +
   ggspatial::geom_spatial_point(data = farm_locs, 
                                 aes(x = long, y = lat, color = farm),
@@ -74,9 +79,9 @@ map <- small_map +
   theme(plot.margin = unit(c(1, 0, 1, 1), "pt"),
         legend.margin=margin(c(0,0,0,0))) +
   inset_element(big_map, 
-                left = 0.35, 
-                right = 0.99, 
-                top = 0.99, 
-                bottom = 0.45) 
+                left = 0.45, 
+                right = 1.001, 
+                top = 1.001, 
+                bottom = 0.62) 
 
 save(map, file = "farmLoc_map.Rdata")

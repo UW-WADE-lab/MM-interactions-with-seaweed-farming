@@ -25,25 +25,26 @@ load("delphinid_diel_activity_data.Rdata")
 
 
 #### Binomial data model -------------------------------------------------------
-detect_timediff_meta <- detect_timediff_eventNearest %>% 
-  mutate(year = year(UTC), month = month(UTC)) %>% 
-  #left_join(metadata, by = c("recordName", "year" = "Year")) %>% 
-  mutate(time_difference = as.numeric(time_difference)) %>% 
-  mutate(JulianDate = yday(UTC))
-
-dielDetect_dredge <- dredge(global.model = gam(formula = detect ~ s(time_difference, by = as.factor(year))+
-                                                 s(JulianDate, by = as.factor(Farm_location)) +
-                                                 s(time_difference, by = as.factor(Farm_location)) +
-                                                 s(JulianDate, by = as.factor(year)) +
-                                                 JulianDate + time_difference + year + Farm_location,
-                                               data = detect_timediff_meta,
-                                               family = binomial,
-                                               na.action = na.fail),
-                            extra = "R^2")
-
-plot(dielDetect_dredge)
-
-save(dielDetect_dredge, file = "Binomial_behavior_model.Rdata")
+# detect_timediff_meta <- detect_timediff_eventNearest %>% 
+#   mutate(year = year(UTC), month = month(UTC)) %>% 
+#   #left_join(metadata, by = c("recordName", "year" = "Year")) %>% 
+#   mutate(time_difference = as.numeric(time_difference)) %>% 
+#   mutate(JulianDate = yday(UTC))
+# 
+# dielDetect_dredge <- dredge(global.model = gam(formula = detect ~ s(time_difference, by = as.factor(year))+
+#                                                  s(JulianDate, by = as.factor(Farm_location)) +
+#                                                  s(time_difference, by = as.factor(Farm_location)) +
+#                                                  s(JulianDate, by = as.factor(year)) +
+#                                                  JulianDate + time_difference + year + Farm_location,
+#                                                data = detect_timediff_meta,
+#                                                family = binomial,
+#                                                na.action = na.fail),
+#                             extra = "R^2")
+# 
+# plot(dielDetect_dredge)
+# 
+# save(dielDetect_dredge, file = "Binomial_behavior_model.Rdata")
+load("Binomial_behavior_model.Rdata")
 
 dielDetect_all <- gam(formula = detect ~ s(time_difference, by = as.factor(year))+
                         s(JulianDate, by = as.factor(Farm_location)) +
@@ -57,10 +58,11 @@ dielDetect_all <- gam(formula = detect ~ s(time_difference, by = as.factor(year)
 summary(dielDetect_all)
 
 # predictions for diel behavior by farm type
-dielDetect_farm <- gam(detect ~ s(abs(time_difference), by = as.factor(Farm_location)),
+dielDetect_farm <- gam(detect ~ s(abs(time_difference), by = as.factor(Farm_location), k = 3),
                        data = detect_timediff_meta,
                        family = binomial,
-                       na.action = na.fail)
+                       na.action = na.fail,
+                       method = "REML", select = TRUE)
 
 summary(dielDetect_farm)
 
@@ -92,7 +94,7 @@ dielDetect_farm_plot <- ggplot(dielDetect_farm_sePreds, aes(x = time_difference,
 save(dielDetect_farm_plot, dielDetect_farm, file = "dietDetect_farm_binom.Rdata")
 
 # predictions for seasonal behavior by farm type
-seasonalDetect_farm <- gam(detect ~ s(JulianDate, by = as.factor(Farm_location)),
+seasonalDetect_farm <- gam(detect ~ s(JulianDate, by = as.factor(Farm_location), k = 2),
                        data = detect_timediff_meta,
                        family = binomial,
                        na.action = na.fail)
@@ -109,8 +111,7 @@ seasonalDetect_farm_preds <- predict(seasonalDetect_farm,
 seasonalDetect_farm_sePreds <- data.frame(seasonalDetect_farm_predictGrid,
                                       mu   = exp(seasonalDetect_farm_preds$fit),
                                       low  = exp(seasonalDetect_farm_preds$fit - 1.96 * seasonalDetect_farm_preds$se.fit),
-                                      high = exp(seasonalDetect_farm_preds$fit + 1.96 * seasonalDetect_farm_preds$se.fit)) %>% 
-  filter(Farm_location == "ML")
+                                      high = exp(seasonalDetect_farm_preds$fit + 1.96 * seasonalDetect_farm_preds$se.fit))
 
 seasonalDetect_farm_plot <- ggplot(seasonalDetect_farm_sePreds, aes(x = JulianDate, y = mu, 
                                                             color = Farm_location, fill = Farm_location)) +
@@ -119,7 +120,7 @@ seasonalDetect_farm_plot <- ggplot(seasonalDetect_farm_sePreds, aes(x = JulianDa
   scale_color_manual(name = "", values = c("#440154FF", "#2A788EFF")) +
   scale_fill_manual(name = "", values = c("#440154FF", "#2A788EFF")) +
   theme_minimal() +
-  #coord_cartesian(ylim = c(0,0.1)) +
+  coord_cartesian(ylim = c(0,0.1)) +
   theme(legend.title = element_blank()) +
   ylab("Probability of detection") +
   xlab("Julian Date")
@@ -342,7 +343,7 @@ save(predDiel_farm_plot, predDiel_quarter_plot, file = "predDiel_plots.Rdata")
 save(poiss.model.full, poiss.model.quarter, poiss.model.farm, file = "predDiel_models.Rdata")
 save(dielDetect_dredge, dielDetect_all,
      dielDetect_farm, dielDetect_year,
-     dielDetect_farm_plot, dielDetect_year_plot,
+     dielDetect_farm_plot, #dielDetect_year_plot,
      seasonalDetect_farm, seasonalDetect_year,
      seasonalDetect_farm_plot, seasonalDetect_year_plot,
      file = "detect_binom.Rdata")

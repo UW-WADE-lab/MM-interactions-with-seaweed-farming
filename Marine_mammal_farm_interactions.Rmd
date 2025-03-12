@@ -124,7 +124,7 @@ map
 
 ```
 
-```{r data_summary, fig.height = 6, fig.width = 8, fig.align = 'center', fig.cap = "Figure 2. Top: Recording effort in each month and year at both farm sites. Middle: Normalized number of farm interactions detected in each month and year throughout the study period. Bottom: Duration of farm interactions."}
+```{r data_summary, fig.height = 6, fig.width = 8, fig.align = 'center', fig.cap = "Figure 2. Top: Recording effort in each month and year at both farm sites. Middle: Normalized number of farm interactions detected in each month and year throughout the study period. Bottom: Duration of farm interactions over the study period. The large figure highlights the duration of most farm interactions, while the inset shows outlier interactions."}
 
 effort + eventsMonthly + eventDur_study + 
   plot_layout(ncol = 1, guides = "collect") &
@@ -137,9 +137,9 @@ A total of `r format(sum(NminPos_near_farm$nMinTotal), big.mark = ",", scientifi
 
 <br>
 
-```{r detect_prob, fig.align = 'center', fig.cap = "Figure 3. Predicted binomial probability of the occurence of a farm interaction at each farm site. The top panel shows the effect of diel proximity to sunrise or sunset on interaction probability at each farm site, while the bottom panel shows the effect of Julian Day on interaction probability at each farm site."}
+```{r detect_prob, fig.align = 'center', fig.cap = "Figure 3. Predicted binomial probability of the occurence of a farm interaction at each farm site. The left plot shows the proportion of click-positive minutes observed at each farm location. The right shows predicted probability of detection based on GAM model output. The top panel shows the effect of diel proximity to sunrise or sunset on interaction probability at each farm site, while the bottom panel shows the effect of Julian Day on interaction probability at each farm site."}
 
-p1 <- (dielDetect_year_plot + seasonalDetect_year_plot) + plot_layout(ncol = 1, axes = "collect_y", guides = "collect")
+p1 <- (dielDetect_farm_plot + seasonalDetect_farm_plot) + plot_layout(ncol = 1, axes = "collect_y", guides = "collect")
 
 eventNumloc + p1
 ```
