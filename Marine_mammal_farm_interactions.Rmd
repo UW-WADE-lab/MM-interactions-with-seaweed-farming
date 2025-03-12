@@ -187,12 +187,12 @@ The number of farm interactions at the Romero site was significantly greater tha
 
 ## SUPPLEMENTAL MATERIALS
 
-```{r figure_s1, fig.cap = "Supplemental Figure S1. Bird's eye and profile views of the 5-line mini farm structure deployed at the Romero farm site in 2021 (top) and the caternary array farm structure deployed at the Media Luna farm site starting in 2022 through the remainder of the study (bottom)."}
+```{r figure_s1, echo=FALSE, message = FALSE, fig.cap = "Supplemental Figure S1. Bird's eye and profile views of the 5-line mini farm structure deployed at the Romero farm site in 2021 (top) and the caternary array farm structure deployed at the Media Luna farm site starting in 2022 through the remainder of the study (bottom)."}
 
 minifarm <- grid::rasterGrob(magick::image_read('Mini-birds-eye-profile.png'))
 catfarm <- grid::rasterGrob(magick::image_read('Cat-birds-eye.png'))
 
-wrap_elements(minifarm) + catfarm 
+wrap_elements(minifarm) + catfarm +
   plot_layout(ncol = 1)
 
 ```
