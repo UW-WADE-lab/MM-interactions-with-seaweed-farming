@@ -10,6 +10,7 @@ library(lubridate)
 library(PNWColors)
 library(MASS)
 library(viridis)
+library(patchwork)
 
 #### Read in data ----------------------------------------------------------
 
@@ -73,7 +74,7 @@ rm(dbList, dbNameList, dbNames)
 rm(conn, result, i)
 
 #### Filter click events by amplitude ------------------------------------------
-#### 160 DB ~ 10 m from hydrophone
+#### 150 DB ~ 15 m from hydrophone
 
 clickPosDB_filt <- clickPosDB %>% 
   group_by(recordName, EventId) %>% 
@@ -226,14 +227,14 @@ Event_dur_near <- eventPosDB_filt %>%
   mutate(EventEnd = ymd_hms(EventEnd)) %>%
   arrange(startUTC) %>% 
   mutate(time.diff = startUTC - lag(startUTC)) %>% 
-  mutate(cont = case_when(time.diff > 6 ~ 0,
-                          time.diff < 6 ~ 1,
+  mutate(cont = case_when(time.diff > 6*60 ~ 0,
+                          time.diff < 6*60 ~ 1,
                           TRUE ~ NA)) %>% 
   mutate(GroupEventId = case_when(cont == 0 ~ EventId,
                                   cont == 1 ~ NA,
                                   TRUE ~ NA)) %>% 
   fill(GroupEventId, .direction = "down") %>% 
-  mutate(GroupEventId = case_when(row_number() == 1 ~ 1,
+  mutate(GroupEventId = case_when(row_number() == 1 ~ EventId,
                                   TRUE ~ GroupEventId)) %>% 
   group_by(recordName, GroupEventId) %>% 
   mutate(StartTime = min(startUTC)) %>% 
@@ -294,7 +295,7 @@ eventsMonthly <- Event_num_near %>%
   geom_bar(stat = "identity", position = "dodge2") +
   #geom_point() +
   labs(fill = "Year") +
-  ylab("Proportional interactions") +
+  ylab("Normalized occurrences/min") +
   xlab("Month") +
   scale_fill_manual(name = "", values = c(
     "ML.2021" = alpha("#440154FF", 0.2),
@@ -319,12 +320,12 @@ eventsMonthly <- Event_num_near %>%
 #### Plot number of interactions by location -----------------------------------
 
 eventNumloc <- ggplot(data = Event_num_near, aes(x = Farm_location, 
-                                  y = propClickPos, 
+                                  y = nEvent/nMinTotal, 
                                   fill = Farm_location,
                                   color = Farm_location))+
   geom_violin(alpha = 0.6)+
   theme_classic() +
-  ylab("Proportion click-positive minutes")+
+  ylab("Monthly occurrences/min")+
   xlab("Farm location") +
   theme(legend.position = "bottom") +
   scale_fill_manual(name = "Farm\nlocation", 
@@ -333,7 +334,16 @@ eventNumloc <- ggplot(data = Event_num_near, aes(x = Farm_location,
                     values = c("#440154FF", "#2A788EFF")) +
   theme(legend.position = "none")
 
+### ANOVA differentiation -----------------------------------------------------
 
+Num_event_loc <- aov(nEvent/nMinTotal ~ Farm_location, data = Event_num_near)
+summary(Num_event_loc)
+
+new_data <- Event_num_near %>%
+  filter(!(Farm_location == "Rom" & month %in% c(1,5,8)))
+
+Num_event_loc_outlier <- aov(nEvent/nMinTotal ~ Farm_location, data = new_data)
+summary(Num_event_loc_outlier)
 #### Plot duration of interactions by quarter and year ------------------------
 
 #boxplot
@@ -396,7 +406,7 @@ eventDurMonthly <- ggplot(test2, aes(x=as.factor(month), y = mean_dur,
                                 fill = interaction(as.factor(Farm_location), as.factor(year)),
                                 color = interaction(as.factor(Farm_location), as.factor(year)))) +
   geom_bar(stat = "identity", position = "dodge2") +
-  geom_errorbar(aes(ymin = mean_dur - sd_dur, ymax = mean_dur + sd_dur), position = "dodge2") +
+  geom_errorbar(aes(ymin = ifelse(mean_dur - sd_dur <0, 0, mean_dur - sd_dur), ymax = mean_dur + sd_dur), position = "dodge2") +
   #geom_point() +
   labs(fill = "Year") +
   ylab("Interaction duration") +
@@ -426,14 +436,14 @@ eventDurMonthly <- ggplot(test2, aes(x=as.factor(month), y = mean_dur,
   labels = c("Rom 2021", "Rom 2022", "ML 2022", "ML 2023", "ML 2024"),
   breaks = c("Rom.2021","Rom.2022", "ML.2022", "ML.2023", "ML.2024")) +
   scale_alpha_discrete(name = "", limits = factor(c(2021, 2022, 2023, 2024)), range = c(0.2,1)) +
-  theme_minimal() +
+  theme_classic() +
   theme(legend.position = "none", 
         legend.title = element_blank(),
         element_text(size=10),
         plot.margin = unit(c(2, 2, 2, 2), "pt"),
         legend.margin=margin(c(1,1,1,1))) +
   guides(fill=guide_legend(nrow=2, byrow=TRUE)) +
-  coord_cartesian(ylim = c(0,15)) +
+  coord_cartesian(ylim = c(0,10)) +
   guides(fill = "none", color = "none")
 
 eventDur_study1 <- ggplot(Event_dur_near, aes(x=StartTime, y= eventDur)) +
@@ -471,15 +481,37 @@ eventDur_study <- eventDur_study1 +
 eventDur_study_lm <- lm(eventDur ~ StartTime, data = Event_dur_near)
 summary(eventDur_study_lm)
 
+### Event Duration by farm location ---------------------------------
+
+dur_by_farm <- aov(eventDur ~ Farm_location, data = Event_dur_near)
+summary(dur_by_farm)
+
+eventDurloc <- ggplot(data = Event_dur_near, aes(x = Farm_location, 
+                                                 y = eventDur, 
+                                                 fill = Farm_location,
+                                                 color = Farm_location))+
+  geom_violin(alpha = 0.6)+
+  theme_classic() +
+  ylab("Occurrence duration")+
+  xlab("Farm location") +
+  theme(legend.position = "bottom") +
+  scale_fill_manual(name = "Farm\nlocation", 
+                    values = c("#440154FF", "#2A788EFF")) +
+  scale_color_manual(name = "Farm\nlocation", 
+                     values = c("#440154FF", "#2A788EFF")) +
+  theme(legend.position = "none")
+
 #save data objects
 save(Nmin_record, metadata,
      eventPosDB_filt, clickPosDB_filt, NminPos_near_farm, 
      Event_dur_near, Event_num_near, 
      detect_data, eventDur_study_lm,
+     Num_event_loc, Num_event_loc_outlier,
+     dur_by_farm,
      file = "click_event_interactions.Rdata")
 
 #save ggplot objects
-save(effort, eventNumloc, eventDurtime, 
+save(effort, eventNumloc, eventDurtime, eventDurloc,
      eventNumtime, eventDurhist, eventDurbar,
      eventsMonthly, eventDurMonthly, eventDur_study,
      file = "Farm_interactions_figs.Rdata")

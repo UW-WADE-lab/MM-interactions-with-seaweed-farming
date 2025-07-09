@@ -25,12 +25,12 @@ load("delphinid_diel_activity_data.Rdata")
 
 
 #### Binomial data model -------------------------------------------------------
-# detect_timediff_meta <- detect_timediff_eventNearest %>% 
-#   mutate(year = year(UTC), month = month(UTC)) %>% 
-#   #left_join(metadata, by = c("recordName", "year" = "Year")) %>% 
-#   mutate(time_difference = as.numeric(time_difference)) %>% 
-#   mutate(JulianDate = yday(UTC))
-# 
+detect_timediff_meta <- detect_timediff_eventNearest %>%
+  mutate(year = year(UTC), month = month(UTC)) %>%
+  #left_join(metadata, by = c("recordName", "year" = "Year")) %>%
+  mutate(time_difference = as.numeric(time_difference)) %>%
+  mutate(JulianDate = yday(UTC))
+
 # dielDetect_dredge <- dredge(global.model = gam(formula = detect ~ s(time_difference, by = as.factor(year))+
 #                                                  s(JulianDate, by = as.factor(Farm_location)) +
 #                                                  s(time_difference, by = as.factor(Farm_location)) +
@@ -46,11 +46,11 @@ load("delphinid_diel_activity_data.Rdata")
 # save(dielDetect_dredge, file = "Binomial_behavior_model.Rdata")
 load("Binomial_behavior_model.Rdata")
 
-dielDetect_all <- gam(formula = detect ~ s(time_difference, by = as.factor(year))+
+dielDetect_all <- gam(formula = detect ~ #s(time_difference, by = as.factor(year))+
                         s(JulianDate, by = as.factor(Farm_location)) +
-                        s(time_difference, by = as.factor(Farm_location)) +
-                        s(JulianDate, by = as.factor(year)) +
-                        JulianDate + time_difference + year + Farm_location,
+                        s(time_difference, by = as.factor(Farm_location)),
+                        #s(JulianDate, by = as.factor(year)) +
+                        #JulianDate + time_difference + Farm_location,
                       data = detect_timediff_meta,
                       family = binomial,
                       na.action = na.fail)
@@ -58,7 +58,7 @@ dielDetect_all <- gam(formula = detect ~ s(time_difference, by = as.factor(year)
 summary(dielDetect_all)
 
 # predictions for diel behavior by farm type
-dielDetect_farm <- gam(detect ~ s(abs(time_difference), by = as.factor(Farm_location), k = 3),
+dielDetect_farm <- gam(detect ~ s(time_difference, by = as.factor(Farm_location), k = 3),
                        data = detect_timediff_meta,
                        family = binomial,
                        na.action = na.fail,
@@ -86,7 +86,7 @@ dielDetect_farm_plot <- ggplot(dielDetect_farm_sePreds, aes(x = time_difference,
   scale_fill_manual(name = "", values = c("#440154FF", "#2A788EFF")) +
   #scale_x_continuous(labels=function(x)(x*10)) +
   #coord_cartesian(ylim = c(0,8)) +
-  theme_minimal() +
+  theme_classic() +
   theme(legend.title = element_blank()) +
   ylab("Probability of detection") +
   xlab("Proximity to sunrise/sunset (hr)")
@@ -119,7 +119,7 @@ seasonalDetect_farm_plot <- ggplot(seasonalDetect_farm_sePreds, aes(x = JulianDa
   geom_smooth(aes(ymin = low, ymax = high, y = mu), stat = "identity") +
   scale_color_manual(name = "", values = c("#440154FF", "#2A788EFF")) +
   scale_fill_manual(name = "", values = c("#440154FF", "#2A788EFF")) +
-  theme_minimal() +
+  theme_classic() +
   coord_cartesian(ylim = c(0,0.1)) +
   theme(legend.title = element_blank()) +
   ylab("Probability of detection") +
@@ -193,10 +193,12 @@ dielDetect_year_plot <- ggplot(dielDetect_year_sePreds, aes(x = time_difference,
   #coord_cartesian(ylim = c(0,0.15), xlim = c(0,5.9)) +
   theme(legend.title = element_blank()) +
   ylab("Probability of detection") +
-  xlab("Proximity to sunrise/sunset (hr)") +
+  xlab("Proximity to sunrise/sunset (hr)")
   #facet_wrap(~year, ncol = 1, strip.position = "right", scales = "free_y")
 
 save(dielDetect_year_plot, dielDetect_year, file = "dielDetect_year_binom.Rdata")
+
+
 ####Count data model -----------------------------------------------------------
 
 #### Bin data by timediff to nearest event -------------------------------------
@@ -253,7 +255,7 @@ nMin.crepuscular.dredge <- dredge(global.model = glm(formula = nMin ~ diel.bins 
 
 ### Plot residuals -------------------------------------------------------------
 
-plot(residuals(poiss.model.full))
+#plot(residuals(poiss.model.full))
 
 #TODO plot categorical residuals here
 
