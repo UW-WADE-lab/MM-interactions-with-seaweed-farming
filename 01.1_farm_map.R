@@ -13,8 +13,6 @@ library(patchwork)
 
 options(ggOceanMaps.userpath = "G:/My Drive/03 Current Research/05 MBL algae farm/01-MM-interactions-with-seaweed-farming/crm_vol9.nc")
 
-#register_stadiamaps("YOUR-API-KEY-HERE", write = TRUE)
-
 pr_shp <- read_sf("G:/My Drive/03 Current Research/05 MBL algae farm/01-MM-interactions-with-seaweed-farming/PR_shp/pvishrpl.shp") %>% 
   st_set_crs(4326)
 
@@ -24,19 +22,31 @@ pr_shp <- read_sf("G:/My Drive/03 Current Research/05 MBL algae farm/01-MM-inter
 
 farm_locs <- data.frame(farm = c("Media Luna", "Romero"), lat = c(17.93888, 17.95135), long = c(-67.045555,-66.98997))
 
-inset_box <- data.frame(lon = c(-67.25, -67.25, -66.7, -66.7), lat = c(17.8, 18.1, 18.1, 17.8))
+#inset_box <- data.frame(lon = c(-67.25, -67.25, -66.7, -66.7), lat = c(17.8, 18.1, 18.1, 17.8))
 
-world <- ne_coastline(scale = 10, returnclass = "sf")
+#world <- ne_coastline(scale = 10, returnclass = "sf")
 
+# map of PR farms
 small_map <- basemap(limits = c(-67.3,-66.25,17.7,18.3), 
                      rotate = FALSE, bathy.style = "rub", grid.col = NA,
                      crs = 4326, land.col = "transparent", land.border.col = "transparent") +
   geom_sf(data = pr_shp) +
   coord_sf(xlim = c(-67.15,-66.6), ylim = c(17.8,18.15)) +
-  #coord_sf(xlim = c(-67.25,-66.7), ylim = c(17.8,18.1)) +
   ggspatial::geom_spatial_point(data = farm_locs, 
                                 aes(x = long, y = lat, color = farm),
-                                size = 4, alpha = 0.6) +
+                                size = 4, alpha = 0.8) +
+  geom_text(data = data.frame(lat = c(17.99), long = c(-67.04)), 
+            aes(x = long, y = lat, inherit.aes = FALSE),
+            label="La Parguera", size=3) +
+  ggspatial::geom_spatial_point(data = data.frame(lat = c(17.98), long = c(-67.04)), 
+                     aes(x = long, y = lat, inherit.aes = FALSE),
+                     size = 1.5) +
+  ggspatial::geom_spatial_point(data = data.frame(lat = c(18.2), long = c(-67.14)), 
+                                aes(x = long, y = lat, inherit.aes = FALSE),
+                                size = 1.5) +
+  geom_text(data = data.frame(lat = c(18.19), long = c(-67.11)), 
+            aes(x = long, y = lat, inherit.aes = FALSE),
+            label=paste0("Mayag\U00FC", "ez"), size=3) +
   theme(axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(), 
         axis.text.y=element_blank(),  
@@ -50,7 +60,8 @@ small_map <- basemap(limits = c(-67.3,-66.25,17.7,18.3),
   guides(fill = "none") +
   guides(color=guide_legend(override.aes=list(fill=NA)))
 
-
+# map of Carribbean 
+  
 big_map <- basemap(limits = c(-86,-65,16,28), 
                    rotate = FALSE, bathy.style = "rcb", grid.col = NA) +
   # ggspatial::geom_spatial_point(data = farm_locs, aes(x = long, y = lat,
@@ -72,9 +83,10 @@ big_map <- basemap(limits = c(-86,-65,16,28),
   scale_fill_continuous(guide = "none") 
 
 
-farm.labs <- c("Media Luna", "Romero")
-names(farm.labs) <- c("ML", "Rom")
+#farm.labs <- c("Media Luna", "Romero")
+#names(farm.labs) <- c("ML", "Rom")
 
+# Combine maps
 map <- small_map + 
   theme(plot.margin = unit(c(1, 0, 1, 1), "pt"),
         legend.margin=margin(c(0,0,0,0))) +
@@ -84,4 +96,5 @@ map <- small_map +
                 top = 1.001, 
                 bottom = 0.62) 
 
+# Save
 save(map, file = "farmLoc_map.Rdata")
