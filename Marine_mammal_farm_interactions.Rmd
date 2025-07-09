@@ -1,6 +1,6 @@
 ---
 title: 'Toward sustainable seaweed aquaculture: delphinid occurrence at macroalgae farms in the Carribean Sea'
-author: "Amy M. Van Cise^1\\*^, Mollie Ball^1^, Clifford Goudey^3^, Gretchen Grebe^3^, Luis R. Rodriguez^2^, Loretta Roberson^3^"
+author: "Amy M. Van Cise^1\\*^, Mollie Ball^1^, Clifford Goudey^2^, Gretchen Grebe^2^, Luis R. Rodriguez^3^, Loretta Roberson^2^"
 
 output: 
     html_document:
@@ -17,9 +17,10 @@ csl: royal-society-open-science.csl
 #  output_file = "index.html") })
 ---
 
-1.  School of Aquatic and Fishery Sciences, University of Washington, Seattle, WA
-2.  Department of Marine Sciences, University of Puerto Rico Mayaguez, La Parguera, PR
-3.  Marine Biological Laboratory, University of Chicago, Woods Hole, MA
+1.    School of Aquatic and Fishery Sciences, University of Washington, Seattle, WA
+2.    Marine Biological Laboratory, University of Chicago, Woods Hole, MA
+3.    Department of Marine Sciences, University of Puerto Rico Mayagüez, La Parguera, PR
+ 
 
 <br>
 
@@ -54,7 +55,7 @@ load("visual_detect_summary.Rdata")
 
 ## ABSTRACT {#ABSTRACT .unnumbered}
 
-Global development of macroalgae farms is rapidly increasing due to growing demand for macroalgae in food, biofuel, cosmetic, and scientific markets, among others. The development of tropical macroalgal farms within the U.S. EEZ is a promising sector of economic growth, especially for small island economies such as Puerto Rico. However, the development of these farms increases risk to marine mammals and other protected species, and may lead to negative outcomes such as habitat exclusion, behavioral alteration, or entanglement. Acoustic monitoring conducted during the development of two small-scale macroalgae farms off the coast of La Parguera, Puerto Rico by recording and analyzing data for approximately 10 days of every month between Jan 2021 - Jan 2024. Delphinids were consistently detected at the farm in approximately 1% of the analyzed data; the greatest rate of occurrence was detected at the Romero farm site early in the study period. We found that delphinid probability of detection was significantly affected by farm location, as well as season (Julian Date) and diel cycle (proximity to sunrise/sunset) with differing patterns at each farm location. Occurrence at farms increased significantly with proximity to sunrise or sunset, indicating crepuscular activity in nearshore delphinids. The results of this research indicate that delphinids occurred near the taut-line marcoalgae farm structures used in this study without evidence of entanglement, and that entanglement risk may vary on a diel and seasonal basis with varying animal behavior. However, future work is required to determine whether placement of the farm structures caused a change of habitat use or behavior at either site.
+Global development of macroalgae farms is rapidly increasing due to growing demand for macroalgae in food, biofuel, cosmetic, and scientific markets, among others. The development of tropical macroalgal farms within the U.S. EEZ is a promising sector of economic growth, especially for small island economies such as Puerto Rico. However, the development of these farms increases risk to marine mammals and other protected species, and may lead to negative outcomes such as habitat exclusion, behavioral alteration, or entanglement. Acoustic monitoring was conducted during the development of two small-scale macroalgae farms off the coast of La Parguera, Puerto Rico by recording and analyzing data for approximately 10 days of every month between Jan 2021 - Jan 2024. Delphinids were consistently detected at the farm in approximately 1% of the analyzed data; the greatest rate of occurrence was detected at the Romero farm site early in the study period. We found that delphinid probability of detection was significantly affected by farm location, as well as season (Julian Date) and diel cycle (proximity to sunrise/sunset) with differing patterns at each farm location. Occurrence at farms increased significantly with proximity to sunrise or sunset, indicating crepuscular activity in nearshore delphinids. The results of this research illustrate that delphinids occurred near the taut-line marcoalgae farm structures used in this study without evidence of entanglement, and that entanglement risk may vary on a diel and seasonal basis with varying animal behavior. However, future work is required to determine whether placement of the farm structures caused a change of habitat use or behavior at either site.
 
 <br>
 
@@ -94,9 +95,9 @@ In addition to acoustic data collection, we visited each farm site approximately
 
 We first divided acoustic data into monthly bins, then conducted an initial automated detection step using PAMGUARD [@Gillespie2009a; @Inc.2020], an open-source software package developed for detection and classification of acoustic signals from marine mammals. Using the click detection module in PAMGUARD, we built an algorithm to categorize potential clicks into three categories: 4-15 kHz clicks with a frequency sweep (unlikely delphinid click), 15-45 kHz signals with a frequency sweep (likely bottlenose dolphin clicks), and all other unclassified detections. These signal categories were developed based on the reported frequency range of bottlenose dolphins [@houser_etal05, @wahlberg_etal11a], the target species of interest and species most likely to interact with the farm.
 
-In addition to automated click detection, we used the PAMGUARD whistle and moan detector to detect tonal signals produced by marine mammals [@Gillespie2013]. After preliminary filtering of detections that were unlikely to be calls from manatees or delphinids, i.e. detections with maximum frequency lower than 2kHz and duration less than 0.1 seconds, the data set of tonal detections was negligible in size. Therefore, we did not include this dataset in downstream analysis of marine mammal occurrence at the farm.
+In addition to automated click detection, we used the PAMGUARD whistle and moan detector to detect tonal signals produced by marine mammals [@Gillespie2013]. After preliminary filtering of detections that were unlikely to be calls from manatees or delphinids, i.e. detections with maximum frequency lower than 2kHz and duration less than 0.1 seconds [@reyes-arias_etal23; @herzing15], the number of detections of tonal calls was negligible in size. Therefore, we did not include this data in downstream analysis of marine mammal occurrence at the farm.
 
-Following automated detection, we conducted a visual validation of the detection data in 1-minute bins to filter out false positive detections. We first removed 4-15 kHz detections and unclassified detections, which do not have the acoustic characteristics of delphinid echolocation clicks. Next, examining only detections in the 15-45 kHz range, we distinguished and annotated delphinid clicks from ambient noise by scanning detections to identify multiple signals in rapid succession with similar waveforms, spectra, and wigner plots, most often increasing and then decreasing in amplitude as individuals swept directional click trains across the recording package (Supplemental Figure S2). All annotated clicks occurring within the same 1-minute recording period were grouped together and given a click event ID.
+Following click automated detection, we conducted a visual validation of the detection data in 1-minute bins to filter out false positive detections. We first removed 4-15 kHz detections and unclassified detections, which do not have the acoustic characteristics of delphinid echolocation clicks. Next, examining only detections in the 15-45 kHz range, we distinguished and annotated delphinid clicks from ambient noise by scanning detections to identify multiple signals in rapid succession with similar waveforms, spectra, and wigner plots, most often increasing and then decreasing in amplitude as individuals swept directional click trains across the recording package (Supplemental Figure S2). All annotated clicks occurring within the same 1-minute recording period were grouped together and given a click event ID.
 
 Due to the prevalence of environmental noise in the data set and the lack of an existing classifier for marine mammals in Puerto Rico or the Caribbean, click events were not formally classified to species; therefore, we refer to all detections as delphinids throughout this manuscript.
 

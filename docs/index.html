@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Amy M. Van Cise1*, Mollie Ball1, Clifford Goudey3, Gretchen Grebe3, Luis R. Rodriguez2, Loretta Roberson3" />
+<meta name="author" content="Amy M. Van Cise1*, Mollie Ball1, Clifford Goudey2, Gretchen Grebe2, Luis R. Rodriguez3, Loretta Roberson2" />
 
 
 <title>Toward sustainable seaweed aquaculture: delphinid occurrence at macroalgae farms in the Carribean Sea</title>
@@ -374,9 +374,9 @@ display: none;
 <h1 class="title toc-ignore">Toward sustainable seaweed aquaculture:
 delphinid occurrence at macroalgae farms in the Carribean Sea</h1>
 <h4 class="author">Amy M. Van Cise<sup>1*</sup>, Mollie
-Ball<sup>1</sup>, Clifford Goudey<sup>3</sup>, Gretchen
-Grebe<sup>3</sup>, Luis R. Rodriguez<sup>2</sup>, Loretta
-Roberson<sup>3</sup></h4>
+Ball<sup>1</sup>, Clifford Goudey<sup>2</sup>, Gretchen
+Grebe<sup>2</sup>, Luis R. Rodriguez<sup>3</sup>, Loretta
+Roberson<sup>2</sup></h4>
 
 </div>
 
@@ -384,10 +384,10 @@ Roberson<sup>3</sup></h4>
 <ol style="list-style-type: decimal">
 <li>School of Aquatic and Fishery Sciences, University of Washington,
 Seattle, WA</li>
-<li>Department of Marine Sciences, University of Puerto Rico Mayaguez,
-La Parguera, PR</li>
 <li>Marine Biological Laboratory, University of Chicago, Woods Hole,
 MA</li>
+<li>Department of Marine Sciences, University of Puerto Rico Mayagüez,
+La Parguera, PR</li>
 </ol>
 <p><br></p>
 <p><sup>*</sup>Corresponding author email: avancise@gmail.com</p>
@@ -402,10 +402,10 @@ within the U.S. EEZ is a promising sector of economic growth, especially
 for small island economies such as Puerto Rico. However, the development
 of these farms increases risk to marine mammals and other protected
 species, and may lead to negative outcomes such as habitat exclusion,
-behavioral alteration, or entanglement. Acoustic monitoring conducted
-during the development of two small-scale macroalgae farms off the coast
-of La Parguera, Puerto Rico by recording and analyzing data for
-approximately 10 days of every month between Jan 2021 - Jan 2024.
+behavioral alteration, or entanglement. Acoustic monitoring was
+conducted during the development of two small-scale macroalgae farms off
+the coast of La Parguera, Puerto Rico by recording and analyzing data
+for approximately 10 days of every month between Jan 2021 - Jan 2024.
 Delphinids were consistently detected at the farm in approximately 1% of
 the analyzed data; the greatest rate of occurrence was detected at the
 Romero farm site early in the study period. We found that delphinid
@@ -414,7 +414,7 @@ well as season (Julian Date) and diel cycle (proximity to
 sunrise/sunset) with differing patterns at each farm location.
 Occurrence at farms increased significantly with proximity to sunrise or
 sunset, indicating crepuscular activity in nearshore delphinids. The
-results of this research indicate that delphinids occurred near the
+results of this research illustrate that delphinids occurred near the
 taut-line marcoalgae farm structures used in this study without evidence
 of entanglement, and that entanglement risk may vary on a diel and
 seasonal basis with varying animal behavior. However, future work is
@@ -584,11 +584,12 @@ whistle and moan detector to detect tonal signals produced by marine
 mammals <span class="citation">[39]</span>. After preliminary filtering
 of detections that were unlikely to be calls from manatees or
 delphinids, i.e. detections with maximum frequency lower than 2kHz and
-duration less than 0.1 seconds, the data set of tonal detections was
-negligible in size. Therefore, we did not include this dataset in
-downstream analysis of marine mammal occurrence at the farm.</p>
-<p>Following automated detection, we conducted a visual validation of
-the detection data in 1-minute bins to filter out false positive
+duration less than 0.1 seconds <span class="citation">[40,41]</span>,
+the number of detections of tonal calls was negligible in size.
+Therefore, we did not include this data in downstream analysis of marine
+mammal occurrence at the farm.</p>
+<p>Following click automated detection, we conducted a visual validation
+of the detection data in 1-minute bins to filter out false positive
 detections. We first removed 4-15 kHz detections and unclassified
 detections, which do not have the acoustic characteristics of delphinid
 echolocation clicks. Next, examining only detections in the 15-45 kHz
@@ -614,7 +615,7 @@ RL = SL - 20*log(r) + \alpha*r
 \]</span></p>
 <p>where RL is the signal’s receive level, SL is the signal’s source
 level, r is the distance in meters from the signal source, and alpha is
-the absorption rate. Using an absorption rate of 0.03 dB/m <span class="citation">[40]</span> and source level of 200 dB <span class="citation">[38]</span>, we estimated that a received level of 150
+the absorption rate. Using an absorption rate of 0.03 dB/m <span class="citation">[42]</span> and source level of 200 dB <span class="citation">[38]</span>, we estimated that a received level of 150
 dB indicates individuals approached to within ~15 m of the recorder.
 This allowed us to identify occurrences at or near the farm, and also
 limited the number of false positive detections, as most ambient noise
@@ -623,7 +624,7 @@ and false positive detections were concentrated below 150 dB.</p>
 <div id="data-analysis" class="section level3">
 <h3>Data analysis</h3>
 <p>All data analyses and plots were generated using the R coding
-language in R studio <span class="citation">[41]</span>. To
+language in R studio <span class="citation">[43]</span>. To
 qualitatively examine shifts in the number or duration of occurrences at
 farms over the study period, we first grouped filtered click-positive
 minutes that occurred sequentially and estimated the normalized
@@ -636,7 +637,7 @@ in the detection. Following this we used a generalized linear models
 occurence at either farm throughout the study period.</p>
 <p>We then estimated binomial acoustic detection probability at each
 farm site using a generalized additive modeling (GAM) framework,
-implemented using mgcv in R <span class="citation">[42]</span>. We
+implemented using mgcv in R <span class="citation">[44]</span>. We
 considered smoothed terms for seasonality (Julian Day) and diel cycle
 (proximity to sunrise/sunset), each factored by farm location, as
 potential drivers of detection probability. Factoring by farm location
@@ -852,7 +853,7 @@ rather they feed primarily on various species of sea grass (e.g. turtle
 grass (<em>Thalassia testudinum</em>), manatee grass (<em>Syringodium
 filiforme</em>), and shoal grass (<em>Halodule wrightii</em>); green
 algae (<em>Ulva lactuca</em>) and some mangrove species comprise
-secondary components of their diet <span class="citation">[43]</span>.
+secondary components of their diet <span class="citation">[45]</span>.
 Because tropical red macroalgae are not a common component of their
 diet, it is unlikely that Antillean manatees will habituate to visiting
 macroalgae farms to forage, but individuals may be attracted by
@@ -910,9 +911,9 @@ noted that data gaps late in the year and the significant spike in
 detection early in the year are likely driving the observed pattern at
 Romero. Similar studies have previously documented site-specific diel
 and seasonal variability in habitat use in bottlenose dolphins
-specifically <span class="citation">[44,45]</span>, and delpinids
-broadly <span class="citation">[46–51]</span>, which often reflects prey
-tracking <span class="citation">[52]</span>. In this case, diel shifts
+specifically <span class="citation">[46,47]</span>, and delpinids
+broadly <span class="citation">[48–53]</span>, which often reflects prey
+tracking <span class="citation">[54]</span>. In this case, diel shifts
 in detection near the farm may be a result of dolphins passing through
 the area to track their prey, which may move offshore into deeper
 wasters during the day and inshore to shallower waters at night.</p>
@@ -943,8 +944,8 @@ potential farm sites prior to placement of infrastructure will be
 essential to informing the selection of sites that are minimally
 utilized by these protected species. Several threatened or critically
 endangered baleen whales occupy offshore waters in the Caribbean,
-notably including the North Atlantic right whale <span class="citation">[16,33,53]</span>. Entanglement is a major threat to
-the recovery of these species <span class="citation">[54,55]</span>.
+notably including the North Atlantic right whale <span class="citation">[16,33,55]</span>. Entanglement is a major threat to
+the recovery of these species <span class="citation">[56,57]</span>.
 While this study indicates that coastal delphinids may be able to
 interact safely with nearshore taut-line seaweed farms, there is little
 published data to suggest whether other species, particularly baleen
@@ -958,7 +959,7 @@ of interactions with any protected species, and would be accompanied by
 regular monitoring to ensure early detection of any entanglements that
 do occur. Ideally, a real-time, automated acoustic monitoring and
 warning system, such as has been implemented for North Atlantic right
-whales in Cape Cod Bay <span class="citation">[56]</span>, would be
+whales in Cape Cod Bay <span class="citation">[58]</span>, would be
 implemented alongside any farms deployed in offshore sites with high
 entanglement risk.</p>
 </div>
@@ -1230,71 +1231,84 @@ Automatic detection and classification of odontocete whistles. <em>The
 Journal of the Acoustical Society of America</em> <strong>134</strong>,
 2427–37. (doi:<a href="https://doi.org/10.1121/1.4816555">10.1121/1.4816555</a>)</div>
 </div>
+<div id="ref-reyes-arias_etal23" class="csl-entry">
+<div class="csl-left-margin">40. </div><div class="csl-right-inline">Reyes-Arias JD <em>et al.</em> 2023
+Vocalizations of wild West Indian manatee vary across subspecies and
+geographic location. <em>Sci Rep</em> <strong>13</strong>, 11028.
+(doi:<a href="https://doi.org/10.1038/s41598-023-37882-8">10.1038/s41598-023-37882-8</a>)</div>
+</div>
+<div id="ref-herzing15" class="csl-entry">
+<div class="csl-left-margin">41. </div><div class="csl-right-inline">Herzing D. 2015 Synchronous and Rhythmic
+Vocalizations and Correlated Underwater Behavior of Free-ranging
+Atlantic Spotted Dolphins (Stenella frontalis) and Bottlenose Dolphins
+(Tursiops truncatus) in the Bahamas. <em>AB&amp;C</em>
+<strong>2</strong>, 14–29. (doi:<a href="https://doi.org/10.12966/abc.02.02.2015">10.12966/abc.02.02.2015</a>)</div>
+</div>
 <div id="ref-Fisher1977" class="csl-entry">
-<div class="csl-left-margin">40. </div><div class="csl-right-inline">Fisher FH, Simmons VP. 1977 <a href="&lt;Go to ISI&gt;://A1977DU39500008">Sound-Absorption in
+<div class="csl-left-margin">42. </div><div class="csl-right-inline">Fisher FH, Simmons VP. 1977 <a href="&lt;Go to ISI&gt;://A1977DU39500008">Sound-Absorption in
 Sea-Water</a>. <em>Journal of the Acoustical Society of America</em>
 <strong>62</strong>, 558–564.</div>
 </div>
 <div id="ref-RCoreTeam2016" class="csl-entry">
-<div class="csl-left-margin">41. </div><div class="csl-right-inline">R
+<div class="csl-left-margin">43. </div><div class="csl-right-inline">R
 Core Team. 2016 <a href="https://www.r-project.org/">R: A Language and
 Environment for Statistical Computing</a>. </div>
 </div>
 <div id="ref-Pedersen2019a" class="csl-entry">
-<div class="csl-left-margin">42. </div><div class="csl-right-inline">Pedersen EJ, Miller DL, Simpson GL, Ross N.
+<div class="csl-left-margin">44. </div><div class="csl-right-inline">Pedersen EJ, Miller DL, Simpson GL, Ross N.
 2019 Hierarchical generalized additive models in ecology: An
 introduction with mgcv. <em>PeerJ</em> <strong>2019</strong>, e6876.
 (doi:<a href="https://doi.org/10.7717/PEERJ.6876/SUPP-1">10.7717/PEERJ.6876/SUPP-1</a>)</div>
 </div>
 <div id="ref-mignucci-giannoni_beck98" class="csl-entry">
-<div class="csl-left-margin">43. </div><div class="csl-right-inline">Mignucci-Giannoni AA, Beck CA. 1998 The diet of
+<div class="csl-left-margin">45. </div><div class="csl-right-inline">Mignucci-Giannoni AA, Beck CA. 1998 The diet of
 the manatee (<em>Trichechus manatus</em>) in Puerto Rico. <em>Marine
 Mammal Science</em> <strong>14</strong>, 394–397. (doi:<a href="https://doi.org/10.1111/j.1748-7692.1998.tb00733.x">10.1111/j.1748-7692.1998.tb00733.x</a>)</div>
 </div>
 <div id="ref-cascao_etal20" class="csl-entry">
-<div class="csl-left-margin">44. </div><div class="csl-right-inline">Cascão I, Lammers MO, Prieto R, Santos RS,
+<div class="csl-left-margin">46. </div><div class="csl-right-inline">Cascão I, Lammers MO, Prieto R, Santos RS,
 Silva MA. 2020 Temporal patterns in acoustic presence and foraging
 activity of oceanic dolphins at seamounts in the Azores. <em>Sci
 Rep</em> <strong>10</strong>, 3610. (doi:<a href="https://doi.org/10.1038/s41598-020-60441-4">10.1038/s41598-020-60441-4</a>)</div>
 </div>
 <div id="ref-fernandez-betelu_etal19" class="csl-entry">
-<div class="csl-left-margin">45. </div><div class="csl-right-inline">Fernandez-Betelu O, Graham IM, Cornulier T,
+<div class="csl-left-margin">47. </div><div class="csl-right-inline">Fernandez-Betelu O, Graham IM, Cornulier T,
 Thompson PM. 2019 Fine scale spatial variability in the influence of
 environmental cycles on the occurrence of dolphins at coastal sites.
 <em>Sci Rep</em> <strong>9</strong>, 2548. (doi:<a href="https://doi.org/10.1038/s41598-019-38900-4">10.1038/s41598-019-38900-4</a>)</div>
 </div>
 <div id="ref-gannier99" class="csl-entry">
-<div class="csl-left-margin">46. </div><div class="csl-right-inline">Gannier A. 1999 Diel variations of the striped
+<div class="csl-left-margin">48. </div><div class="csl-right-inline">Gannier A. 1999 Diel variations of the striped
 dolphin distribution oﬀ the French Riviera (Northwestern Mediterranean
 Sea). <em>Aquatic Mammals</em> <strong>25</strong>, 123–134.</div>
 </div>
 <div id="ref-kanes_etal24" class="csl-entry">
-<div class="csl-left-margin">47. </div><div class="csl-right-inline">Kanes KSJ, Dosso SE, Insua TL, Mouy X, Bateman
+<div class="csl-left-margin">49. </div><div class="csl-right-inline">Kanes KSJ, Dosso SE, Insua TL, Mouy X, Bateman
 A. 2024 Seasonal and diel patterns in Pacific white-sided dolphin
 (Lagenorhynchus obliquidens) pulsed calls near Barkley Canyon.
 <em>Marine Mammal Science</em> <strong>40</strong>, 73–88. (doi:<a href="https://doi.org/10.1111/mms.13055">10.1111/mms.13055</a>)</div>
 </div>
 <div id="ref-nuuttila_etal18" class="csl-entry">
-<div class="csl-left-margin">48. </div><div class="csl-right-inline">Nuuttila HK, Bertelli CM, Mendzil A, Dearle N.
+<div class="csl-left-margin">50. </div><div class="csl-right-inline">Nuuttila HK, Bertelli CM, Mendzil A, Dearle N.
 2018 Seasonal and diel patterns in cetacean use and foraging at a
 potential marine renewable energy site. <em>Marine Pollution
 Bulletin</em> <strong>129</strong>, 633–644. (doi:<a href="https://doi.org/10.1016/j.marpolbul.2017.10.051">10.1016/j.marpolbul.2017.10.051</a>)</div>
 </div>
 <div id="ref-sasaki-yamamoto_etal13" class="csl-entry">
-<div class="csl-left-margin">49. </div><div class="csl-right-inline">Sasaki-Yamamoto Y, Akamatsu T, Ura T, Sugimatsu
+<div class="csl-left-margin">51. </div><div class="csl-right-inline">Sasaki-Yamamoto Y, Akamatsu T, Ura T, Sugimatsu
 H, Kojima J, Bahl R, Behera S, Kohshima S. 2013 Diel changes in the
 movement patterns of Ganges River dolphins monitored using stationed
 stereo acoustic data loggers. <em>Marine Mammal Science</em>
 <strong>29</strong>, 589–605. (doi:<a href="https://doi.org/10.1111/j.1748-7692.2012.00590.x">10.1111/j.1748-7692.2012.00590.x</a>)</div>
 </div>
 <div id="ref-shaff_baird21" class="csl-entry">
-<div class="csl-left-margin">50. </div><div class="csl-right-inline">Shaff JF, Baird RW. 2021 Diel and lunar
+<div class="csl-left-margin">52. </div><div class="csl-right-inline">Shaff JF, Baird RW. 2021 Diel and lunar
 variation in diving behavior of rough-toothed dolphins () off Kauaʻi,
 Hawaiʻi. <em>Marine Mammal Science</em> <strong>37</strong>, 1261–1276.
 (doi:<a href="https://doi.org/10.1111/mms.12811">10.1111/mms.12811</a>)</div>
 </div>
 <div id="ref-wang_etal15" class="csl-entry">
-<div class="csl-left-margin">51. </div><div class="csl-right-inline">Wang Z-T, Nachtigall PE, Akamatsu T, Wang K-X,
+<div class="csl-left-margin">53. </div><div class="csl-right-inline">Wang Z-T, Nachtigall PE, Akamatsu T, Wang K-X,
 Wu Y-P, Liu J-C, Duan G-Q, Cao H-J, Wang D. 2015 Passive Acoustic
 Monitoring the Diel, Lunar, Seasonal and Tidal Patterns in the Biosonar
 Activity of the Indo-Pacific Humpback Dolphins (Sousa chinensis) in the
@@ -1302,55 +1316,55 @@ Pearl River Estuary, China. <em>PLOS ONE</em> <strong>10</strong>,
 e0141807. (doi:<a href="https://doi.org/10.1371/journal.pone.0141807">10.1371/journal.pone.0141807</a>)</div>
 </div>
 <div id="ref-monterroso_etal13" class="csl-entry">
-<div class="csl-left-margin">52. </div><div class="csl-right-inline">Monterroso P, Alves PC, Ferreras P. 2013 Catch
+<div class="csl-left-margin">54. </div><div class="csl-right-inline">Monterroso P, Alves PC, Ferreras P. 2013 Catch
 Me If You Can: Diel Activity Patterns of Mammalian Prey and Predators.
 <em>Ethology</em> <strong>119</strong>, 1044–1056. (doi:<a href="https://doi.org/10.1111/eth.12156">10.1111/eth.12156</a>)</div>
 </div>
 <div id="ref-rosel_etal21" class="csl-entry">
-<div class="csl-left-margin">53. </div><div class="csl-right-inline">Rosel PE, Wilcox LA, Yamada TK, Mullin KD. 2021
+<div class="csl-left-margin">55. </div><div class="csl-right-inline">Rosel PE, Wilcox LA, Yamada TK, Mullin KD. 2021
 A new species of baleen whale (Balaenoptera) from the Gulf of Mexico,
 with a review of its geographic distribution. <em>Marine Mammal
 Science</em> <strong>37</strong>, 577–610. (doi:<a href="https://doi.org/10.1111/MMS.12776">10.1111/MMS.12776</a>)</div>
 </div>
 <div id="ref-iucn24" class="csl-entry">
-<div class="csl-left-margin">54. </div><div class="csl-right-inline">IUCN. 2024 The IUCN Red List of Threatened
+<div class="csl-left-margin">56. </div><div class="csl-right-inline">IUCN. 2024 The IUCN Red List of Threatened
 Species. Version 2024-2. </div>
 </div>
 <div id="ref-kraus_etal16" class="csl-entry">
-<div class="csl-left-margin">55. </div><div class="csl-right-inline">Kraus SD, Kenney RD, Mayo CA, McLellan WA,
+<div class="csl-left-margin">57. </div><div class="csl-right-inline">Kraus SD, Kenney RD, Mayo CA, McLellan WA,
 Moore MJ, Nowacek DP. 2016 Recent Scientific Publications Cast Doubt on
 North Atlantic Right Whale Future. <em>Front. Mar. Sci.</em>
 <strong>3</strong>. (doi:<a href="https://doi.org/10.3389/fmars.2016.00137">10.3389/fmars.2016.00137</a>)</div>
 </div>
 <div id="ref-baumgartner_etal19" class="csl-entry">
-<div class="csl-left-margin">56. </div><div class="csl-right-inline">Baumgartner MF <em>et al.</em> 2019 Persistent
+<div class="csl-left-margin">58. </div><div class="csl-right-inline">Baumgartner MF <em>et al.</em> 2019 Persistent
 near real-time passive acoustic monitoring for baleen whales from a
 moored buoy: System description and evaluation. <em>Methods in Ecology
 and Evolution</em> <strong>10</strong>, 1476–1489. (doi:<a href="https://doi.org/10.1111/2041-210X.13244">10.1111/2041-210X.13244</a>)</div>
 </div>
 <div id="ref-dombrowski07" class="csl-entry">
-<div class="csl-left-margin">57. </div><div class="csl-right-inline">Dombrowski K. 2007 <a href="https://www.jstor.org/stable/25605359">Subsistence Livelihood,
+<div class="csl-left-margin">59. </div><div class="csl-right-inline">Dombrowski K. 2007 <a href="https://www.jstor.org/stable/25605359">Subsistence Livelihood,
 Native Identity and Internal Differentiation in Southeast Alaska</a>.
 <em>Anthropologica</em> <strong>49</strong>, 211–229.</div>
 </div>
 <div id="ref-reed_reed07" class="csl-entry">
-<div class="csl-left-margin">58. </div><div class="csl-right-inline">Reed M, Reed M. 1907 <em>The economic seaweeds
+<div class="csl-left-margin">60. </div><div class="csl-right-inline">Reed M, Reed M. 1907 <em>The economic seaweeds
 of Hawaii and their food value</em>. Washington: Government Printing
 Office. (doi:<a href="https://doi.org/10.5962/bhl.title.57650">10.5962/bhl.title.57650</a>)</div>
 </div>
 <div id="ref-levine97" class="csl-entry">
-<div class="csl-left-margin">59. </div><div class="csl-right-inline">Levine I. 1997 US Nori farming: an emerging
+<div class="csl-left-margin">61. </div><div class="csl-right-inline">Levine I. 1997 US Nori farming: an emerging
 industry. <em>Phycological Newsletter</em> <strong>34</strong>,
 16–18.</div>
 </div>
 <div id="ref-kim_etal19" class="csl-entry">
-<div class="csl-left-margin">60. </div><div class="csl-right-inline">Kim
+<div class="csl-left-margin">62. </div><div class="csl-right-inline">Kim
 J, Stekoll M, Yarish C. 2019 Opportunities, challenges and future
 directions of open-water seaweed aquaculture in the United States.
 <em>Phycologia</em> <strong>58</strong>, 446–461. (doi:<a href="https://doi.org/10.1080/00318884.2019.1625611">10.1080/00318884.2019.1625611</a>)</div>
 </div>
 <div id="ref-liddel_yencho21" class="csl-entry">
-<div class="csl-left-margin">61. </div><div class="csl-right-inline">Liddel M, Yencho M. 2021 Fisheries of the
+<div class="csl-left-margin">63. </div><div class="csl-right-inline">Liddel M, Yencho M. 2021 Fisheries of the
 United States, 2019: Current Fishery Statistics No. 2019., 141.</div>
 </div>
 </div>
@@ -1388,20 +1402,20 @@ used to manually validate clicks.
 <div id="extra-text" class="section level3">
 <h3>Extra text</h3>
 <p>Within the United States, seaweed has traditionally been consumed by
-native Alaskans <span class="citation">[57]</span> and Hawaiians <span class="citation">[58]</span>. It has also been consumed in Maine for
-over a century <span class="citation">[59]</span>. The development of
+native Alaskans <span class="citation">[59]</span> and Hawaiians <span class="citation">[60]</span>. It has also been consumed in Maine for
+over a century <span class="citation">[61]</span>. The development of
 commercial seaweed aquaculture in the U.S. faced multiple challenges in
 the late 1900s and early 2000s due to complex and geographically
 variable procedures for gaining aquaculture permits, relatively cheap
 and available oil and gas, and community-based hesitation about the
-local effects of nearshore aquaculture <span class="citation">[60]</span>. Despite these challenges, the industry has
+local effects of nearshore aquaculture <span class="citation">[62]</span>. Despite these challenges, the industry has
 grown since 2010, with most growth concentrated in Maine, Alaska, and
-Washington <span class="citation">[60]</span>. The average annual U.S.
+Washington <span class="citation">[62]</span>. The average annual U.S.
 commercial production of seaweed 2014-2018 exceeded 21.6 million pounds
 (~9,800 metric tons), most of which was cultivated within 3 miles of the
-U.S. shoreline <span class="citation">[61]</span>, and is considered by
+U.S. shoreline <span class="citation">[63]</span>, and is considered by
 NOAA National Marine Fisheries Service to be an important growth sector
-in the global seafood economy <span class="citation">[61]</span>, and by
+in the global seafood economy <span class="citation">[63]</span>, and by
 the U.S. Department of Energy as promising as a source of biofuel
 (ARPA-E Macroalgae Research Inspiring Novel Energy Resources (MARINER)
 program, 2017).</p>
