@@ -1,6 +1,6 @@
 ---
 title: 'Toward sustainable seaweed aquaculture: delphinid occurrence at macroalgae farms in the Carribean Sea'
-author: "Amy M. Van Cise^1\\*^, Mollie Ball^1^, Clifford Goudey^2^, Gretchen Grebe^2^, Luis R. Rodriguez^3^, Loretta Roberson^2^"
+author: "Amy M. Van Cise^1\\*^, Mollie Ball^1^, Clifford Goudey^2^, Gretchen Grebe^3^, Luis R. Rodriguez^4^, Loretta Roberson^4^"
 
 output: 
     html_document:
@@ -18,8 +18,9 @@ csl: royal-society-open-science.csl
 ---
 
 1.    School of Aquatic and Fishery Sciences, University of Washington, Seattle, WA
-2.    Marine Biological Laboratory, University of Chicago, Woods Hole, MA
-3.    Department of Marine Sciences, University of Puerto Rico Mayagüez, La Parguera, PR
+2.    C.A. Goudey & Associates, Newburyport, MA
+3.    Marine Biological Laboratory, University of Chicago, Woods Hole, MA
+4.    Department of Marine Sciences, University of Puerto Rico Mayagüez, La Parguera, PR
  
 
 <br>
@@ -75,7 +76,7 @@ A recent review of peer-review literature, technical memoranda, and white papers
 
 Although existing research indicates avoidance behaviors are more likely than attraction around aquaculture infrastructure, marine herbivores (i.e., manatees) may be attracted to nearshore macroalgae farms for food and fish-eating marine mammals may be attracted to fishes aggregated by farming structures [@duprey09; @pearson09]. Marine mammals that directly interact with farm structures risk entanglement or entrapment in slack or loose anchor lines, horizontal longlines, and surface buoy markers [@price_etal17]. Globally, entanglement in aquaculture gear is uncommon and unlikely to significantly impact marine mammals [@bath_etal23]; however, the impact of entanglements on specific populations may be significant if those populations are endangered, or if the concentration of farms increases in important feeding, breeding, or resting habitat [@bath_etal23].
 
-Approximately 30 marine mammals inhabit the Caribbean; six of the baleen whales are observed very rarely [@wursig17; @hayes_etal20]. Most regular inhabitants are toothed whales, as well as two baleen whales, three beaked whales, and one manatee species. No pinnipeds currently inhabit the Caribbean. Pantropical spotted dolphins (*Stenella attenuata*) are the most common marine mammal in abundance. Nearshore waters are frequented by three delphinid species: common bottlenose dolphins (*Tursiops trucatus*, hereafter bottlenose dolphins), Atlantic spotted dolphins (*Stenella frontalis*), and the endangered Antillean manatee (*Trichechus manatus manatus*, hereafter manatee). The endangered North Atlantic right whale (*Eubalaena glacialis*) is also an occasional visitor to the region.
+Approximately 30 marine mammals inhabit the Caribbean; six of the baleen whales are observed very rarely [@wursig17; @hayes_etal20]. Most regular inhabitants are toothed whales, as well as two baleen whales, three beaked whales, and one manatee species. No pinnipeds currently inhabit the Caribbean. Pantropical spotted dolphins (*Stenella attenuata*) are the most common marine mammal in abundance. Nearshore waters are frequented by three marine mammal species: common bottlenose dolphins (*Tursiops trucatus*, hereafter bottlenose dolphins), Atlantic spotted dolphins (*Stenella frontalis*), and the endangered Antillean manatee (*Trichechus manatus manatus*, hereafter manatee). The endangered North Atlantic right whale (*Eubalaena glacialis*) is also an occasional visitor to the region.
 
 Current knowledge of marine mammal distributions in Puerto Rican waters is patchy and based primarily on stranding records, two aerial surveys conducted in the early 2000s, an offshore survey supported by NOAA's National Marine Fisheries Service, and citizen sightings [@rodriguez-ferrer_etal18]. From these sources, sightings of at least 17 species have been reported in the waters off Puerto Rico. Most of those primarily inhabit waters off the continental shelf (deeper than 200m; @rodriguez-ferrer_etal18). Only two species are commonly found in the nearshore waters southwest of Puerto Rico: bottlenose dolphins and manatees. Bottlenose dolphins are documented throughout the region, while manatees spend \>95% of their time along the shore, in areas with bottoms depths \<2 m (REF Daniel Slone USGS report).
 
